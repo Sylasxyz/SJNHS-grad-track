@@ -7,20 +7,14 @@ require_once __DIR__ . '/app_config.php';
 $user = current_user();
 $role = (string)($user['Role'] ?? '');
 
-$phpSelf = trim((string)($_SERVER['PHP_SELF'] ?? ''), '/');
-$prefix = (strpos($phpSelf, 'admin/') !== false || strpos($phpSelf, 'instructor/') !== false) ? '../' : '';
-
-function rail_href(string $href): string
+function rail_href(string $route): string
 {
-    global $prefix;
-    return $prefix . $href;
+    return app_url($route);
 }
 
-function rail_active(string $href): bool
+function rail_active(string $route): bool
 {
-    $phpSelf = trim((string)($_SERVER['PHP_SELF'] ?? ''), '/');
-    $target = ltrim($href, '/');
-    return str_ends_with($phpSelf, $target);
+    return app_route_is($route);
 }
 ?>
 

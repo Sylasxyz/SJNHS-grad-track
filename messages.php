@@ -12,7 +12,7 @@ $myId = (int)($user['User_ID'] ?? 0);
 $myRole = (string)($user['Role'] ?? '');
 
 if ($myRole === 'Principal') {
-    header('Location: dashboard.php');
+    app_redirect('dashboard');
     exit;
 }
 
@@ -58,8 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$errors) {
             $partnerId = $recipientId;
             $composeMode = false;
             $success = 'Message sent.';
-            header('Location: messages.php?with=' . $partnerId . '&sent=1');
-            exit;
+            app_redirect('messages', ['with' => $partnerId, 'sent' => 1]);
         } catch (Throwable $e) {
             $errors[] = 'Could not send message. Please try again.';
         }
@@ -127,10 +126,10 @@ require_once __DIR__ . '/includes/header.php';
           </div>
         </div>
         <div class="d-flex gap-2">
-          <a class="btn btn-sm btn-primary" href="messages.php?compose=1">
+          <a class="btn btn-sm btn-primary" href="<?= htmlspecialchars(app_url('messages', ['compose' => 1])) ?>">
             <i class="bi bi-pencil-square me-1"></i>New message
           </a>
-          <a class="btn btn-sm btn-outline-secondary" href="dashboard.php">Back</a>
+          <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Back</a>
         </div>
       </div>
     </div>
@@ -162,7 +161,7 @@ require_once __DIR__ . '/includes/header.php';
           <div class="messages-conv-list">
             <?php foreach ($conversations as $c): ?>
               <a class="messages-conv-item <?= $partnerId === (int)$c['partner_id'] ? 'is-active' : '' ?>"
-                 href="messages.php?with=<?= (int)$c['partner_id'] ?>">
+                 href="<?= htmlspecialchars(app_url('messages', ['with' => (int)$c['partner_id']])) ?>">
                 <div class="d-flex justify-content-between gap-2">
                   <div class="messages-conv-name"><?= htmlspecialchars((string)$c['display_name']) ?></div>
                   <?php if ((int)$c['unread_count'] > 0): ?>
@@ -218,7 +217,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <div>
                   <button class="btn btn-primary" type="submit">Send message</button>
-                  <a class="btn btn-link" href="messages.php">Cancel</a>
+                  <a class="btn btn-link" href="<?= htmlspecialchars(app_url('messages')) ?>">Cancel</a>
                 </div>
               </form>
             <?php endif; ?>
@@ -230,7 +229,7 @@ require_once __DIR__ . '/includes/header.php';
               <h2 class="h6 mb-0"><?= htmlspecialchars(message_user_display_name($partner)) ?></h2>
               <div class="text-muted small"><?= htmlspecialchars(message_user_subtitle($partner)) ?></div>
             </div>
-            <a class="btn btn-sm btn-outline-secondary" href="messages.php?compose=1">New</a>
+            <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('messages', ['compose' => 1])) ?>">New</a>
           </div>
 
           <div class="messages-thread" id="messagesThread">
@@ -261,7 +260,7 @@ require_once __DIR__ . '/includes/header.php';
             <i class="bi bi-chat-dots"></i>
             <h2 class="h6 mb-1">Select a conversation</h2>
             <p class="text-muted small mb-3">Or start a new message to <?= $myRole === 'Student' ? 'an instructor/admin' : 'a student or alumni' ?>.</p>
-            <a class="btn btn-primary btn-sm" href="messages.php?compose=1">New message</a>
+            <a class="btn btn-primary btn-sm" href="<?= htmlspecialchars(app_url('messages', ['compose' => 1])) ?>">New message</a>
           </div>
         <?php endif; ?>
       </section>

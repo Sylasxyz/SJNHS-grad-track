@@ -95,10 +95,10 @@ require_once __DIR__ . '/includes/header.php';
       <?php if ($error): ?><div class="alert alert-danger py-2"><?= htmlspecialchars($error) ?></div><?php endif; ?>
       <?php if ($success): ?>
         <div class="alert alert-success py-2"><?= htmlspecialchars($success) ?></div>
-        <a class="btn btn-primary w-100" href="login.php<?= $isEmbed ? '?embed=1' : '' ?>">Go to Login</a>
+        <a class="btn btn-primary w-100" href="<?= htmlspecialchars(app_url_embed('login', $isEmbed)) ?>">Go to Login</a>
       <?php elseif (!$canReset): ?>
         <div class="alert alert-warning py-2">Please verify your email with a 6-digit code first.</div>
-        <a class="btn btn-outline-primary w-100" href="forgot_password.php<?= $isEmbed ? '?embed=1' : '' ?>">Request a verification code</a>
+        <a class="btn btn-outline-primary w-100" href="<?= htmlspecialchars(app_url_embed('forgot_password', $isEmbed)) ?>">Request a verification code</a>
       <?php else: ?>
         <p class="text-muted small mb-3">
           Resetting password for <strong><?= htmlspecialchars($email) ?></strong>

@@ -141,15 +141,15 @@ require_once __DIR__ . '/includes/header.php';
         <div class="d-flex gap-2 flex-wrap">
           <?php if ($canManage && $hasArchiveColumn): ?>
             <?php if ($view === 'archived'): ?>
-              <a class="btn btn-sm btn-outline-secondary" href="announcements.php">Active</a>
+              <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('announcements')) ?>">Active</a>
             <?php else: ?>
-              <a class="btn btn-sm btn-outline-secondary" href="announcements.php?view=archived">Archived</a>
+              <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('announcements', ['view' => 'archived'])) ?>">Archived</a>
             <?php endif; ?>
           <?php endif; ?>
           <?php if ($canManage): ?>
-            <a class="btn btn-sm btn-primary" href="announcement_create.php">Post announcement</a>
+            <a class="btn btn-sm btn-primary" href="<?= htmlspecialchars(app_url('announcement_create')) ?>">Post announcement</a>
           <?php endif; ?>
-          <a class="btn btn-sm btn-outline-secondary" href="dashboard.php">Back</a>
+          <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Back</a>
         </div>
       </div>
     </div>

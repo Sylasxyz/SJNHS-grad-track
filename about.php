@@ -24,7 +24,7 @@ $tagline = (string)($SCHOOL_TAGLINE ?? '');
 
 <nav class="navbar navbar-expand-lg landing-nav sticky-top">
   <div class="container landing-container">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.php">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="<?= htmlspecialchars(app_url('index')) ?>">
       <?php if ($logoUrl): ?>
         <img src="<?= htmlspecialchars(landing_asset_or_url($logoUrl)) ?>" alt="<?= htmlspecialchars($schoolName) ?> logo" style="width:32px;height:32px;border-radius:10px;object-fit:cover;">
       <?php endif; ?>
@@ -35,19 +35,19 @@ $tagline = (string)($SCHOOL_TAGLINE ?? '');
     </button>
     <div class="collapse navbar-collapse" id="landingNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-        <li class="nav-item"><a class="nav-link active" href="about.php">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="index.php#features">Features</a></li>
-        <li class="nav-item"><a class="nav-link" href="index.php#access">Get access</a></li>
+        <li class="nav-item"><a class="nav-link active" href="<?= htmlspecialchars(app_url('about')) ?>">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= htmlspecialchars(app_url()) ?>#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= htmlspecialchars(app_url()) ?>#access">Get access</a></li>
         <?php if ($loggedIn): ?>
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-sm btn-outline-secondary landing-cta app-btn" href="dashboard.php">Dashboard</a>
+            <a class="btn btn-sm btn-outline-secondary landing-cta app-btn" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-sm btn-primary landing-cta app-btn" href="logout.php">Logout</a>
+            <a class="btn btn-sm btn-primary landing-cta app-btn" href="<?= htmlspecialchars(app_url('logout')) ?>">Logout</a>
           </li>
         <?php else: ?>
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-sm btn-primary landing-cta app-btn js-open-auth" data-auth-mode="login" href="login.php">Login</a>
+            <a class="btn btn-sm btn-primary landing-cta app-btn js-open-auth" data-auth-mode="login" href="<?= htmlspecialchars(app_url('login')) ?>">Login</a>
           </li>
         <?php endif; ?>
       </ul>
@@ -191,10 +191,10 @@ $tagline = (string)($SCHOOL_TAGLINE ?? '');
     <p class="text-muted mb-4">Register as a graduate or log in to open your dashboard.</p>
     <div class="d-flex flex-wrap justify-content-center gap-2">
       <?php if ($loggedIn): ?>
-        <a class="btn btn-primary landing-cta app-btn" href="dashboard.php"><i class="bi bi-grid me-1"></i> Open Dashboard</a>
+        <a class="btn btn-primary landing-cta app-btn" href="<?= htmlspecialchars(app_url('dashboard')) ?>"><i class="bi bi-grid me-1"></i> Open Dashboard</a>
       <?php else: ?>
-        <a class="btn btn-primary landing-cta app-btn js-open-auth" data-auth-mode="register" href="register.php"><i class="bi bi-person-plus me-1"></i> Register</a>
-        <a class="btn btn-outline-secondary landing-cta app-btn js-open-auth" data-auth-mode="login" href="login.php"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
+        <a class="btn btn-primary landing-cta app-btn js-open-auth" data-auth-mode="register" href="<?= htmlspecialchars(app_url('register')) ?>"><i class="bi bi-person-plus me-1"></i> Register</a>
+        <a class="btn btn-outline-secondary landing-cta app-btn js-open-auth" data-auth-mode="login" href="<?= htmlspecialchars(app_url('login')) ?>"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
       <?php endif; ?>
     </div>
   </div>

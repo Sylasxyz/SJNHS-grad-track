@@ -141,9 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['pw_reset_id'] = (int)$resetRow['Reset_ID'];
                     $_SESSION['pw_reset_email'] = $emailValue;
 
-                    $redirect = 'reset_password.php' . ($isEmbed ? '?embed=1' : '');
-                    header('Location: ' . $redirect);
-                    exit;
+                    app_redirect('reset_password', $isEmbed ? ['embed' => 1] : []);
                 }
             } catch (Throwable $e) {
                 $error = 'Unable to verify the code right now. Please try again later.';
@@ -220,7 +218,7 @@ require_once __DIR__ . '/includes/header.php';
       </form>
 
       <div class="text-center mt-3">
-        <a href="login.php<?= $isEmbed ? '?embed=1' : '' ?>">Back to Login</a>
+        <a href="<?= htmlspecialchars(app_url_embed('login', $isEmbed)) ?>">Back to Login</a>
       </div>
     </div>
   </div>

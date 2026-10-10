@@ -9,7 +9,7 @@ require_once __DIR__ . '/includes/app_config.php';
 $isEmbed = (($_GET['embed'] ?? '') === '1');
 
 if ($isEmbed && is_logged_in()) {
-    echo '<script>window.top.location.href="dashboard.php";</script>';
+    echo '<script>window.top.location.href=' . json_encode(app_url('dashboard')) . ';</script>';
     exit;
 }
 if (!$isEmbed) {
@@ -176,11 +176,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($_SESSION['login_attempts'], $_SESSION['login_lockout_until']);
             login_user($user);
             if ($isEmbed) {
-                echo '<script>window.top.location.href="dashboard.php";</script>';
+                echo '<script>window.top.location.href=' . json_encode(app_url('dashboard')) . ';</script>';
                 exit;
             }
-            header('Location: dashboard.php');
-            exit;
+            app_redirect('dashboard');
         }
     }
 }
@@ -197,7 +196,7 @@ require_once __DIR__ . '/includes/header.php';
           <?php if (!empty($SCHOOL_LOGO_URL)): ?>
             <img
               class="auth-side-logo"
-              src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL, $prefix)) ?>"
+              src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL)) ?>"
               alt="<?= htmlspecialchars((string)($SCHOOL_NAME ?? 'School')) ?> logo">
           <?php else: ?>
             <div class="auth-side-mark">WELCOME.</div>
@@ -205,7 +204,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div class="auth-side-bottom">
           Not a member yet?
-          <a class="fw-semibold text-decoration-none" href="register.php<?= $isEmbed ? '?embed=1' : '' ?>">Register now</a>
+          <a class="fw-semibold text-decoration-none" href="<?= htmlspecialchars(app_url_embed('register', $isEmbed)) ?>">Register now</a>
         </div>
       </div>
 
@@ -214,7 +213,7 @@ require_once __DIR__ . '/includes/header.php';
           <h1 class="auth-title-sm mb-0">Log in</h1>
           <div class="auth-logo-wrap auth-logo-right">
             <?php if (!empty($SCHOOL_LOGO_URL)): ?>
-              <img class="auth-logo-img" src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL, $prefix)) ?>" alt="<?= htmlspecialchars((string)($SCHOOL_NAME ?? 'School')) ?> logo">
+              <img class="auth-logo-img" src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL)) ?>" alt="<?= htmlspecialchars((string)($SCHOOL_NAME ?? 'School')) ?> logo">
             <?php else: ?>
               <span class="auth-logo-fallback"><i class="bi bi-mortarboard"></i></span>
             <?php endif; ?>
@@ -268,12 +267,12 @@ require_once __DIR__ . '/includes/header.php';
           <button class="btn btn-dark w-100 auth-submit-btn" type="submit">Log in now</button>
           <div class="text-end mt-2">
             <a class="small text-decoration-none"
-               href="forgot_password.php<?= $isEmbed ? '?embed=1' : '' ?>">Forgot password?</a>
+               href="<?= htmlspecialchars(app_url_embed('forgot_password', $isEmbed)) ?>">Forgot password?</a>
           </div>
           <div class="text-center mt-3 small">
             Need an account?
             <a class="fw-semibold text-decoration-none"
-               href="register.php<?= $isEmbed ? '?embed=1' : '' ?>">Register</a>
+               href="<?= htmlspecialchars(app_url_embed('register', $isEmbed)) ?>">Register</a>
           </div>
         </form>
       </div>

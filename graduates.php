@@ -138,7 +138,7 @@ require_once __DIR__ . '/includes/header.php';
           <a class="btn btn-sm btn-outline-primary" href="?<?= htmlspecialchars(http_build_query(array_merge($_GET, ['export' => 'csv']))) ?>">
             <i class="bi bi-download me-1"></i>Export CSV
           </a>
-          <a class="btn btn-sm btn-outline-secondary" href="dashboard.php">Back</a>
+          <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Back</a>
         </div>
       </div>
       <?php if ($msg): ?><div class="alert alert-success mb-0"><?= htmlspecialchars($msg) ?></div><?php endif; ?>
@@ -234,7 +234,7 @@ require_once __DIR__ . '/includes/header.php';
                     <td><?= ((int)($r['Is_Verified'] ?? 0) === 1) ? '<span class="badge text-bg-success">Yes</span>' : '<span class="badge text-bg-warning">No</span>' ?></td>
                     <td class="text-muted small"><?= htmlspecialchars((string)$r['Last_Updated']) ?></td>
                     <?php if ($canManage): ?>
-                    <td><a class="btn btn-sm btn-primary" href="graduate_edit.php?profile_id=<?= (int)$r['Profile_ID'] ?>">Edit</a></td>
+                    <td><a class="btn btn-sm btn-primary" href="<?= htmlspecialchars(app_url('graduate_edit', ['profile_id' => (int)$r['Profile_ID']])) ?>">Edit</a></td>
                     <?php endif; ?>
                   </tr>
                 <?php endforeach; ?>
@@ -294,7 +294,7 @@ require_once __DIR__ . '/includes/header.php';
                   </button>
                   <?php if ($canManage): ?>
                   <div>
-                    <a class="btn btn-sm btn-primary" href="graduate_edit.php?profile_id=<?= (int)$r['Profile_ID'] ?>">Edit</a>
+                    <a class="btn btn-sm btn-primary" href="<?= htmlspecialchars(app_url('graduate_edit', ['profile_id' => (int)$r['Profile_ID']])) ?>">Edit</a>
                   </div>
                   <?php endif; ?>
                 </div>

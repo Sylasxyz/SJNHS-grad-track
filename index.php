@@ -28,7 +28,7 @@ if (!is_array($carousel)) {
 
 <nav class="navbar navbar-expand-lg landing-nav sticky-top">
   <div class="container landing-container">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.php">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="<?= htmlspecialchars(app_url('index')) ?>">
       <?php if ($logoUrl): ?>
         <img src="<?= htmlspecialchars(landing_asset_or_url($logoUrl)) ?>" alt="<?= htmlspecialchars($schoolName) ?> logo" style="width:32px;height:32px;border-radius:10px;object-fit:cover;">
       <?php endif; ?>
@@ -39,19 +39,19 @@ if (!is_array($carousel)) {
     </button>
     <div class="collapse navbar-collapse" id="landingNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-        <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= htmlspecialchars(app_url('about')) ?>">About</a></li>
         <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
         <li class="nav-item"><a class="nav-link" href="#access">Get access</a></li>
         <?php if ($loggedIn): ?>
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-sm btn-outline-secondary landing-cta app-btn" href="dashboard.php">Dashboard</a>
+            <a class="btn btn-sm btn-outline-secondary landing-cta app-btn" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-sm btn-primary landing-cta app-btn" href="logout.php">Logout</a>
+            <a class="btn btn-sm btn-primary landing-cta app-btn" href="<?= htmlspecialchars(app_url('logout')) ?>">Logout</a>
           </li>
         <?php else: ?>
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-sm btn-primary landing-cta app-btn js-open-auth" data-auth-mode="login" href="login.php">Login</a>
+            <a class="btn btn-sm btn-primary landing-cta app-btn js-open-auth" data-auth-mode="login" href="<?= htmlspecialchars(app_url('login')) ?>">Login</a>
           </li>
         <?php endif; ?>
       </ul>
@@ -79,11 +79,11 @@ if (!is_array($carousel)) {
         </p>
         <div class="d-flex flex-wrap gap-2">
           <?php if ($loggedIn): ?>
-            <a class="btn btn-primary landing-cta app-btn" href="dashboard.php"><i class="bi bi-grid me-1"></i> Open Dashboard</a>
-            <a class="btn btn-outline-secondary landing-cta app-btn" href="register.php"><i class="bi bi-person-plus me-1"></i> Register Another Account</a>
+            <a class="btn btn-primary landing-cta app-btn" href="<?= htmlspecialchars(app_url('dashboard')) ?>"><i class="bi bi-grid me-1"></i> Open Dashboard</a>
+            <a class="btn btn-outline-secondary landing-cta app-btn" href="<?= htmlspecialchars(app_url('register')) ?>"><i class="bi bi-person-plus me-1"></i> Register Another Account</a>
           <?php else: ?>
-            <a class="btn btn-primary landing-cta app-btn js-open-auth" data-auth-mode="register" href="register.php"><i class="bi bi-person-plus me-1"></i> Register</a>
-            <a class="btn btn-outline-secondary landing-cta app-btn js-open-auth" data-auth-mode="login" href="login.php"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
+            <a class="btn btn-primary landing-cta app-btn js-open-auth" data-auth-mode="register" href="<?= htmlspecialchars(app_url('register')) ?>"><i class="bi bi-person-plus me-1"></i> Register</a>
+            <a class="btn btn-outline-secondary landing-cta app-btn js-open-auth" data-auth-mode="login" href="<?= htmlspecialchars(app_url('login')) ?>"><i class="bi bi-box-arrow-in-right me-1"></i> Login</a>
           <?php endif; ?>
         </div>
       </div>
@@ -106,7 +106,7 @@ if (!is_array($carousel)) {
     <div class="text-center mb-4">
       <h2 class="landing-section-title">Built for Graduate Tracking</h2>
       <p class="text-muted mb-2">Simple for students. Powerful for the school.</p>
-      <a class="fw-semibold text-decoration-none" href="about.php" style="color:#111827;font-size:.85rem;">Learn more about us →</a>
+      <a class="fw-semibold text-decoration-none" href="<?= htmlspecialchars(app_url('about')) ?>" style="color:#111827;font-size:.85rem;">Learn more about us →</a>
     </div>
     <div class="row g-3">
       <div class="col-12 col-md-4">
@@ -207,21 +207,21 @@ if (!is_array($carousel)) {
         <div class="landing-feature-card">
           <div class="fw-bold mb-1"><i class="bi bi-person me-2"></i>Graduate</div>
           <div class="text-muted small mb-3">Register, then wait for verification.</div>
-          <a class="link-primary fw-semibold text-decoration-none js-open-auth" data-auth-mode="register" href="register.php">Student registration →</a>
+          <a class="link-primary fw-semibold text-decoration-none js-open-auth" data-auth-mode="register" href="<?= htmlspecialchars(app_url('register')) ?>">Student registration →</a>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="landing-feature-card">
           <div class="fw-bold mb-1"><i class="bi bi-box-arrow-in-right me-2"></i>Login</div>
           <div class="text-muted small mb-3">Access your dashboard after approval.</div>
-          <a class="link-primary fw-semibold text-decoration-none js-open-auth" data-auth-mode="login" href="login.php">Login →</a>
+          <a class="link-primary fw-semibold text-decoration-none js-open-auth" data-auth-mode="login" href="<?= htmlspecialchars(app_url('login')) ?>">Login →</a>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="landing-feature-card">
           <div class="fw-bold mb-1"><i class="bi bi-shield-lock me-2"></i>Admin Portal</div>
           <div class="text-muted small mb-3">Verify registrations, manage users, and view reports.</div>
-          <a class="link-primary fw-semibold text-decoration-none js-open-auth" data-auth-mode="login" href="login.php">Login →</a>
+          <a class="link-primary fw-semibold text-decoration-none js-open-auth" data-auth-mode="login" href="<?= htmlspecialchars(app_url('login')) ?>">Login →</a>
         </div>
       </div>
     </div>
@@ -259,7 +259,9 @@ if (!is_array($carousel)) {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const mode = btn.getAttribute('data-auth-mode') || 'login';
-        const src = mode === 'register' ? 'register.php?embed=1' : 'login.php?embed=1';
+        const src = mode === 'register'
+          ? <?= json_encode(app_url('register', ['embed' => 1])) ?>
+          : <?= json_encode(app_url('login', ['embed' => 1])) ?>;
         title.textContent = mode === 'register' ? 'Create your account' : 'Log in';
         frame.src = src;
         modal.show();

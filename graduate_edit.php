@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     }
     $del = $pdo->prepare('DELETE FROM Graduate_Profiles WHERE Profile_ID = ?');
     $del->execute([$profileId]);
-    header('Location: graduates.php');
+    app_redirect('graduates');
     exit;
 }
 
@@ -139,7 +139,7 @@ require_once __DIR__ . '/includes/header.php';
           <h1 class="h4 mb-1">Edit Graduate Profile</h1>
           <div class="text-muted small">User: <strong><?= htmlspecialchars((string)$profile['Username']) ?></strong> · Profile ID: <?= (int)$profileId ?></div>
         </div>
-        <a class="btn btn-sm btn-outline-secondary" href="graduates.php">Back</a>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('graduates')) ?>">Back</a>
       </div>
     </div>
 

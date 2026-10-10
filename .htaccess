@@ -1,0 +1,19 @@
+# Pretty URLs (XAMPP Apache). Requires mod_rewrite enabled.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^(?:includes|database|docker|logs|tools)(?:/|$) - [F,L]
+    RewriteRule ^router\.php$ - [F,L]
+
+    RewriteRule ^index\.php$ ./ [R=301,L,QSA]
+
+    RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+    RewriteRule ^(.+?)\.php$ $1 [R=301,L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.+?)/?$ $1.php [L]
+</IfModule>

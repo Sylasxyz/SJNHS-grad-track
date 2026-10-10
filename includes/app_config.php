@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/url_helpers.php';
+
 // Branding (used on the landing page + top bar)
 $SCHOOL_NAME = 'San Josef National High School';
 $SCHOOL_LOGO_URL = 'assets/school-logo.png'; // e.g. 'https://your-site.com/logo.png' or 'assets/logo.png'
@@ -21,8 +23,8 @@ $SCHOOL_EMAIL = 'info@sjnhs.edu.ph';
 $SCHOOL_PHONE = '(044) 803-0048';
 
 // Footer / legal links (use # for placeholders until real pages exist)
-$SCHOOL_PRIVACY_URL = 'privacy.php';
-$SCHOOL_TERMS_URL = 'terms.php';
+$SCHOOL_PRIVACY_URL = 'privacy';
+$SCHOOL_TERMS_URL = 'terms';
 
 // Optional social links shown in the footer.
 $SCHOOL_SOCIAL_FACEBOOK = '#';

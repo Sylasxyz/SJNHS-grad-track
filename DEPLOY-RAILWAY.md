@@ -46,7 +46,13 @@ Railway disk is ephemeral. For a persistent demo:
 - DB: unchanged if you don’t set env vars (defaults `127.0.0.1`, `root`, `graduate_tracking`).
 - Mail: copy `includes/mail_config.local.example.php` → `includes/mail_config.local.php` and set `SMTP_PASS` (file is gitignored).
 
-## 8. Security
+## 8. Pretty URLs (no `.php` in the browser)
+
+The app uses extensionless paths (`/login`, `/dashboard`). Railway uses `router.php` with the PHP built-in server; XAMPP uses root `.htaccess` (enable **mod_rewrite** and **AllowOverride All** for the app folder).
+
+Visiting `*.php` directly redirects to the clean URL.
+
+## 9. Security
 
 - Do not commit `mail_config.local.php` or `.env` with secrets.
 - Set `APP_DEBUG=0` in production.

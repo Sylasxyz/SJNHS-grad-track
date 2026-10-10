@@ -342,7 +342,7 @@ require_once __DIR__ . '/../includes/header.php';
           <div class="text-muted small">Approve accounts, change roles/status, deactivate, or permanently delete to free an email for registration.</div>
         </div>
         <div class="d-flex gap-2">
-          <a class="btn btn-sm btn-outline-secondary app-btn" href="../dashboard.php">Back</a>
+          <a class="btn btn-sm btn-outline-secondary app-btn" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Back</a>
         </div>
       </div>
     </div>
@@ -556,7 +556,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
         <?php if ($search !== ''): ?>
           <div class="col-12 col-md-2 d-grid">
-            <a class="btn btn-sm btn-outline-secondary" href="users.php">Clear</a>
+            <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('users')) ?>">Clear</a>
           </div>
         <?php endif; ?>
       </form>

@@ -117,7 +117,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="app-card p-3 mb-3">
       <div class="d-flex align-items-center justify-content-between gap-2">
         <h1 class="h4 mb-0">Post Announcement</h1>
-        <a class="btn btn-sm btn-outline-secondary" href="dashboard.php">Back</a>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('dashboard')) ?>">Back</a>
       </div>
     </div>
 
@@ -167,7 +167,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <button class="btn btn-primary" type="submit">Post</button>
-        <a class="btn btn-link" href="announcements.php">View announcements</a>
+        <a class="btn btn-link" href="<?= htmlspecialchars(app_url('announcements')) ?>">View announcements</a>
       </form>
     </div>
   </div>

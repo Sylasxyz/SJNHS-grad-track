@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
 
-header('Location: instructor/dashboard.php');
-exit;
+require_once __DIR__ . '/includes/url_helpers.php';
 
+app_redirect('instructor/dashboard');

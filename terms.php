@@ -22,15 +22,15 @@ $isEmbed = (($_GET['embed'] ?? '') === '1');
 <?php if (!$isEmbed): ?>
 <nav class="navbar navbar-expand-lg landing-nav sticky-top">
   <div class="container landing-container">
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.php">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="<?= htmlspecialchars(app_url('index')) ?>">
       <?php if ($logoUrl): ?>
         <img src="<?= htmlspecialchars(landing_asset_or_url($logoUrl)) ?>" alt="<?= htmlspecialchars($schoolName) ?> logo" style="width:32px;height:32px;border-radius:10px;object-fit:cover;">
       <?php endif; ?>
       <span><?= htmlspecialchars($schoolName) ?></span>
     </a>
     <div class="ms-auto d-flex gap-2">
-      <a class="btn btn-sm btn-outline-secondary" href="privacy.php">Privacy Policy</a>
-      <a class="btn btn-sm btn-outline-secondary" href="register.php">Back to Register</a>
+      <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('privacy')) ?>">Privacy Policy</a>
+      <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('register')) ?>">Back to Register</a>
     </div>
   </div>
 </nav>
@@ -206,7 +206,7 @@ $isEmbed = (($_GET['embed'] ?? '') === '1');
       </p>
       <p>
         For more information, please see our
-        <a href="privacy.php<?= $isEmbed ? '?embed=1' : '' ?>">Privacy Policy</a>.
+        <a href="<?= htmlspecialchars(app_url_embed('privacy', $isEmbed)) ?>">Privacy Policy</a>.
       </p>
 
       <h2 class="h6">12. Changes to These Terms</h2>
@@ -237,8 +237,8 @@ $isEmbed = (($_GET['embed'] ?? '') === '1');
       </div>
     <?php else: ?>
       <div class="mt-3 d-flex flex-wrap gap-2">
-        <a class="btn btn-sm btn-dark" href="register.php">Return to Register</a>
-        <a class="btn btn-sm btn-outline-secondary" href="privacy.php">View Privacy Policy</a>
+        <a class="btn btn-sm btn-dark" href="<?= htmlspecialchars(app_url('register')) ?>">Return to Register</a>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('privacy')) ?>">View Privacy Policy</a>
       </div>
     <?php endif; ?>
   </div>

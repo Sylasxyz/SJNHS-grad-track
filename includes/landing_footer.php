@@ -7,8 +7,10 @@ $tagline = (string)($SCHOOL_TAGLINE ?? '');
 $address = (string)($SCHOOL_ADDRESS ?? ($SCHOOL_LOCATION_LABEL ?? ''));
 $email = (string)($SCHOOL_EMAIL ?? '');
 $phone = (string)($SCHOOL_PHONE ?? '');
-$privacyUrl = (string)($SCHOOL_PRIVACY_URL ?? '#');
-$termsUrl = (string)($SCHOOL_TERMS_URL ?? '#');
+$privacyRaw = (string)($SCHOOL_PRIVACY_URL ?? '#');
+$termsRaw = (string)($SCHOOL_TERMS_URL ?? '#');
+$privacyUrl = ($privacyRaw === '#' || preg_match('#^https?://#i', $privacyRaw)) ? $privacyRaw : app_url($privacyRaw);
+$termsUrl = ($termsRaw === '#' || preg_match('#^https?://#i', $termsRaw)) ? $termsRaw : app_url($termsRaw);
 $facebook = (string)($SCHOOL_SOCIAL_FACEBOOK ?? '#');
 $instagram = (string)($SCHOOL_SOCIAL_INSTAGRAM ?? '#');
 $year = date('Y');
@@ -38,9 +40,9 @@ $year = date('Y');
         <div class="col-6 col-lg-3 landing-footer-col">
           <h3 class="landing-footer-heading">Quick Links</h3>
           <ul class="landing-footer-links list-unstyled mb-0">
-            <li><a href="about.php">About Us</a></li>
-            <li><a href="index.php#features">Features</a></li>
-            <li><a href="index.php#access">Get Access</a></li>
+            <li><a href="<?= htmlspecialchars(app_url('about')) ?>">About Us</a></li>
+            <li><a href="<?= htmlspecialchars(app_url()) ?>#features">Features</a></li>
+            <li><a href="<?= htmlspecialchars(app_url()) ?>#access">Get Access</a></li>
             <li><a href="<?= htmlspecialchars($privacyUrl) ?>">Privacy Policy</a></li>
           </ul>
         </div>

@@ -5,6 +5,7 @@ require_once __DIR__ . '/env.php';
 
 $db = app_db_settings();
 $DB_HOST = $db['host'];
+$DB_PORT = (int)$db['port'];
 $DB_NAME = $db['name'];
 $DB_USER = $db['user'];
 $DB_PASS = $db['pass'];
@@ -23,8 +24,16 @@ try {
     ]);
 } catch (PDOException $e) {
     http_response_code(500);
+    $onRailway = app_env('RAILWAY_ENVIRONMENT') !== null || app_env('RAILWAY_PROJECT_ID') !== null;
+    $localHost = in_array($DB_HOST, ['127.0.0.1', 'localhost', '::1'], true);
     if ($DB_DEBUG) {
-        echo 'Database connection failed: ' . htmlspecialchars($e->getMessage());
+        $msg = 'Database connection failed: ' . $e->getMessage();
+        $msg .= ' (host=' . $DB_HOST . ', port=' . $DB_PORT . ', database=' . $DB_NAME . ')';
+        if ($onRailway && ($localHost || str_contains($e->getMessage(), 'Connection refused'))) {
+            $msg .= ' — On Railway, open your web service → Variables → add references from the MySQL service '
+                . '(MYSQLHOST, MYSQLPORT, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE or MYSQL_URL), then redeploy.';
+        }
+        echo htmlspecialchars($msg);
     } else {
         echo 'Database connection failed.';
     }

@@ -113,7 +113,7 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
           </div>
         </div>
-        <a class="btn btn-sm btn-outline-secondary" href="../analytics.php">View analytics</a>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('analytics')) ?>">View analytics</a>
       </div>
     </div>
 
@@ -196,10 +196,10 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
           </div>
           <div class="d-flex gap-2">
-            <a class="btn btn-sm btn-outline-primary" href="reports.php?export=<?= (int)$viewReport['report_id'] ?>">
+            <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('admin/reports', ['export' => (int)$viewReport['report_id']])) ?>">
               <i class="bi bi-download me-1"></i>Export CSV
             </a>
-            <a class="btn btn-sm btn-outline-secondary" href="reports.php">Close</a>
+            <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('reports')) ?>">Close</a>
           </div>
         </div>
         <div class="row g-3 mb-3">
@@ -290,8 +290,8 @@ require_once __DIR__ . '/../includes/header.php';
                   <td><?= (float)($s['verification_rate'] ?? 0) ?>%</td>
                   <td>
                     <div class="d-flex flex-wrap gap-1">
-                      <a class="btn btn-sm btn-outline-primary" href="reports.php?view=<?= (int)$report['report_id'] ?>">View</a>
-                      <a class="btn btn-sm btn-outline-secondary" href="reports.php?export=<?= (int)$report['report_id'] ?>">CSV</a>
+                      <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('admin/reports', ['view' => (int)$report['report_id']])) ?>">View</a>
+                      <a class="btn btn-sm btn-outline-secondary" href="<?= htmlspecialchars(app_url('admin/reports', ['export' => (int)$report['report_id']])) ?>">CSV</a>
                       <?php if ($canManageReports): ?>
                       <form method="post" class="d-inline" onsubmit="return confirm('Delete this report?');">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">

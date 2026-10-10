@@ -274,7 +274,7 @@ require_once __DIR__ . '/includes/header.php';
               <div class="student-progress">
                 <span style="width: <?= max(0, min(100, (int)$profileCompletion)) ?>%;"></span>
               </div>
-              <a class="student-status-link" href="profile.php">Complete your profile →</a>
+              <a class="student-status-link" href="<?= htmlspecialchars(app_url('profile')) ?>">Complete your profile →</a>
             </div>
 
             <div class="student-status-item">
@@ -297,7 +297,7 @@ require_once __DIR__ . '/includes/header.php';
         <aside class="app-card student-profile-card">
           <div class="student-profile-head">
             <h2 class="student-card-title mb-0">My Profile</h2>
-            <a class="btn btn-sm btn-outline-primary" href="profile.php" aria-label="Edit profile"><i class="bi bi-pencil"></i></a>
+            <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('profile')) ?>" aria-label="Edit profile"><i class="bi bi-pencil"></i></a>
           </div>
           <div class="student-profile-identity">
             <div class="student-profile-avatar">
@@ -354,7 +354,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="app-card student-list-card">
           <div class="student-list-head">
             <h2 class="student-card-title mb-0">Announcements</h2>
-            <a href="announcements.php">View all</a>
+            <a href="<?= htmlspecialchars(app_url('announcements')) ?>">View all</a>
           </div>
           <?php if (!$studentAnnouncements): ?>
             <div class="text-muted small py-2">No announcements yet.</div>
@@ -371,16 +371,16 @@ require_once __DIR__ . '/includes/header.php';
               <?php endforeach; ?>
             </ul>
           <?php endif; ?>
-          <a class="student-list-footer" href="announcements.php">See all announcements →</a>
+          <a class="student-list-footer" href="<?= htmlspecialchars(app_url('announcements')) ?>">See all announcements →</a>
         </div>
 
         <div class="app-card student-list-card">
           <div class="student-list-head">
             <h2 class="student-card-title mb-0">Messages</h2>
-            <a href="messages.php">Open inbox</a>
+            <a href="<?= htmlspecialchars(app_url('messages')) ?>">Open inbox</a>
           </div>
           <div class="text-muted small py-2">Message instructors or admins inside the system for support and follow-ups.</div>
-          <a class="student-list-footer" href="messages.php?compose=1">Send a message →</a>
+          <a class="student-list-footer" href="<?= htmlspecialchars(app_url('messages', ['compose' => 1])) ?>">Send a message →</a>
         </div>
 
         <div class="app-card student-list-card">
@@ -398,7 +398,7 @@ require_once __DIR__ . '/includes/header.php';
               </li>
             <?php endforeach; ?>
           </ul>
-          <a class="student-list-footer" href="profile.php">View profile details →</a>
+          <a class="student-list-footer" href="<?= htmlspecialchars(app_url('profile')) ?>">View profile details →</a>
         </div>
       </div>
     </section>
@@ -415,7 +415,7 @@ require_once __DIR__ . '/includes/header.php';
           <?= $securityAlertCount ?> account(s) had <strong>5+ failed login attempts</strong> in the last 30 minutes.
         </div>
       </div>
-      <a href="admin/users.php#security-alerts" class="btn btn-danger btn-sm flex-shrink-0">
+      <a href="<?= htmlspecialchars(app_url('admin/users#security-alerts')) ?>" class="btn btn-danger btn-sm flex-shrink-0">
         <i class="bi bi-eye me-1"></i>View Alerts
       </a>
     </div>
@@ -457,11 +457,11 @@ require_once __DIR__ . '/includes/header.php';
           <?php endif; ?>
         </h2>
         <?php if ($role === 'Instructor'): ?>
-          <a class="btn btn-sm btn-outline-primary" href="graduates.php"><i class="bi bi-search"></i></a>
+          <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i></a>
         <?php elseif ($role === 'Principal'): ?>
-          <a class="btn btn-sm btn-outline-primary" href="graduates.php"><i class="bi bi-search"></i></a>
+          <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i></a>
         <?php else: ?>
-          <a class="btn btn-sm btn-outline-primary" href="admin/users.php"><i class="bi bi-plus"></i></a>
+          <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('admin/users')) ?>"><i class="bi bi-plus"></i></a>
         <?php endif; ?>
       </div>
       <?php if ($role === 'Instructor'): ?>
@@ -470,7 +470,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php else: ?>
           <div class="list-group dashboard-message-list">
             <?php foreach (array_slice($instUnverified, 0, 5) as $uv): ?>
-              <a class="list-group-item list-group-item-action" href="graduate_edit.php?profile_id=<?= (int)$uv['Profile_ID'] ?>">
+              <a class="list-group-item list-group-item-action" href="<?= htmlspecialchars(app_url('graduate_edit', ['profile_id' => (int)$uv['Profile_ID']])) ?>">
                 <div class="fw-semibold"><?= htmlspecialchars((string)$uv['Full_Name']) ?></div>
                 <div class="text-muted small"><?= htmlspecialchars((string)($uv['Course'] ?? '')) ?> · Batch <?= (int)$uv['Batch_Year'] ?></div>
               </a>
@@ -494,7 +494,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php else: ?>
           <div class="list-group dashboard-message-list">
             <?php foreach ($adminPendingUsers as $pu): ?>
-              <a class="list-group-item list-group-item-action" href="admin/users.php">
+              <a class="list-group-item list-group-item-action" href="<?= htmlspecialchars(app_url('admin/users')) ?>">
                 <div class="fw-semibold"><?= htmlspecialchars((string)$pu['Full_Name']) ?></div>
                 <div class="text-muted small"><?= htmlspecialchars((string)$pu['Role']) ?></div>
               </a>
@@ -508,25 +508,25 @@ require_once __DIR__ . '/includes/header.php';
       <h3 class="h6 mb-2">Features</h3>
       <div class="row g-2">
         <?php if ($role === 'Principal'): ?>
-          <div class="col-12"><a class="dashboard-action-card" href="graduates.php"><i class="bi bi-search"></i><span>Graduate Records</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="announcements.php"><i class="bi bi-megaphone"></i><span>Announcements</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="analytics.php"><i class="bi bi-graph-up-arrow"></i><span>Analytics</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="admin/reports.php"><i class="bi bi-file-earmark-bar-graph"></i><span>View Reports</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i><span>Graduate Records</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('announcements')) ?>"><i class="bi bi-megaphone"></i><span>Announcements</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('analytics')) ?>"><i class="bi bi-graph-up-arrow"></i><span>Analytics</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('admin/reports')) ?>"><i class="bi bi-file-earmark-bar-graph"></i><span>View Reports</span></a></div>
         <?php elseif ($role === 'Instructor'): ?>
-          <div class="col-12"><a class="dashboard-action-card" href="messages.php"><i class="bi bi-chat-dots"></i><span>Messages</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="graduates.php"><i class="bi bi-search"></i><span>Search / Filter</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="announcement_create.php"><i class="bi bi-pencil-square"></i><span>Post Announcement</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="instructor/users.php"><i class="bi bi-person-gear"></i><span>Manage Students</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="analytics.php"><i class="bi bi-graph-up-arrow"></i><span>Analytics</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="admin/reports.php"><i class="bi bi-file-earmark-bar-graph"></i><span>Generate Reports</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('messages')) ?>"><i class="bi bi-chat-dots"></i><span>Messages</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i><span>Search / Filter</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('announcement_create')) ?>"><i class="bi bi-pencil-square"></i><span>Post Announcement</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('instructor/users')) ?>"><i class="bi bi-person-gear"></i><span>Manage Students</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('analytics')) ?>"><i class="bi bi-graph-up-arrow"></i><span>Analytics</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('admin/reports')) ?>"><i class="bi bi-file-earmark-bar-graph"></i><span>Generate Reports</span></a></div>
         <?php else: ?>
-          <div class="col-12"><a class="dashboard-action-card" href="messages.php"><i class="bi bi-chat-dots"></i><span>Messages</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="admin/users.php"><i class="bi bi-people"></i><span>Verify / Manage Users</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="analytics.php"><i class="bi bi-graph-up-arrow"></i><span>Analytics & Reports</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="admin/reports.php"><i class="bi bi-file-earmark-bar-graph"></i><span>Generate Reports</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="graduates.php"><i class="bi bi-search"></i><span>Graduate Records</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('messages')) ?>"><i class="bi bi-chat-dots"></i><span>Messages</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('admin/users')) ?>"><i class="bi bi-people"></i><span>Verify / Manage Users</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('analytics')) ?>"><i class="bi bi-graph-up-arrow"></i><span>Analytics & Reports</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('admin/reports')) ?>"><i class="bi bi-file-earmark-bar-graph"></i><span>Generate Reports</span></a></div>
+          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i><span>Graduate Records</span></a></div>
           <div class="col-12">
-            <a class="dashboard-action-card" href="admin/users.php#security-alerts" style="position:relative;">
+            <a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('admin/users#security-alerts')) ?>" style="position:relative;">
               <i class="bi bi-shield-exclamation"></i>
               <span>Security Alerts</span>
               <?php if ($securityAlertCount > 0): ?>
@@ -541,7 +541,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="app-card p-3 dashboard-bottom-center">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <h3 class="h6 mb-0">Recent Graduate Records</h3>
-        <a class="small" href="graduates.php">View all</a>
+        <a class="small" href="<?= htmlspecialchars(app_url('graduates')) ?>">View all</a>
       </div>
       <?php if (!$directoryRows): ?>
         <div class="text-muted small">No records yet.</div>

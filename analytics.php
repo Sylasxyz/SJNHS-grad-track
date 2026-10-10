@@ -101,11 +101,11 @@ require_once __DIR__ . '/includes/header.php';
             <input type="hidden" name="batch_to" value="<?= (int)$batchTo ?>">
             <button class="btn btn-outline-secondary" type="submit">Save snapshot</button>
           </form>
-          <a class="btn btn-dark" href="admin/reports.php">Generate reports</a>
+          <a class="btn btn-dark" href="<?= htmlspecialchars(app_url('admin/reports')) ?>">Generate reports</a>
         </div>
       <?php else: ?>
         <div class="analytics-header-actions">
-          <a class="btn btn-dark" href="admin/reports.php">View reports</a>
+          <a class="btn btn-dark" href="<?= htmlspecialchars(app_url('admin/reports')) ?>">View reports</a>
         </div>
       <?php endif; ?>
     </header>
@@ -123,7 +123,7 @@ require_once __DIR__ . '/includes/header.php';
       </div>
       <button class="btn btn-dark" type="submit">Apply</button>
       <?php if ($batchFrom > 0 || $batchTo > 0): ?>
-        <a class="btn btn-outline-secondary" href="analytics.php">Clear</a>
+        <a class="btn btn-outline-secondary" href="<?= htmlspecialchars(app_url('analytics')) ?>">Clear</a>
       <?php endif; ?>
     </form>
 
@@ -260,7 +260,7 @@ require_once __DIR__ . '/includes/header.php';
       <article class="analytics-panel">
         <div class="analytics-panel-head">
           <h2 class="analytics-panel-title">Awaiting verification</h2>
-          <a class="analytics-panel-link" href="graduates.php">Open graduate records</a>
+          <a class="analytics-panel-link" href="<?= htmlspecialchars(app_url('graduates')) ?>">Open graduate records</a>
         </div>
         <div class="table-responsive">
           <table class="analytics-table">

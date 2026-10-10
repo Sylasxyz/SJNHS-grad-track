@@ -13,6 +13,6 @@ function landing_asset_or_url(string $value): string
     if (preg_match('#^https?://#i', $v)) {
         return $v;
     }
-    return ltrim($v, '/');
+    return app_asset(ltrim($v, '/'));
 }
 

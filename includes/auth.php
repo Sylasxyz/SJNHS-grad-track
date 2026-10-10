@@ -5,6 +5,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+require_once __DIR__ . '/url_helpers.php';
+
 function is_logged_in(): bool
 {
     return isset($_SESSION['user']) && is_array($_SESSION['user']);
@@ -18,10 +20,7 @@ function current_user(): ?array
 function require_login(): void
 {
     if (!is_logged_in()) {
-        $phpSelf = $_SERVER['PHP_SELF'] ?? '';
-        $prefix = (strpos($phpSelf, '/admin/') !== false) ? '../' : '';
-        header('Location: ' . $prefix . 'login.php');
-        exit;
+        app_redirect('login');
     }
 }
 
@@ -64,8 +63,7 @@ function can_view_oversight(): bool
 function redirect_logged_in_user(): void
 {
     if (is_logged_in()) {
-        header('Location: dashboard.php');
-        exit;
+        app_redirect('dashboard');
     }
 }
 

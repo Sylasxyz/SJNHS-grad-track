@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/mailer.php';
 $isEmbed = (($_GET['embed'] ?? '') === '1');
 
 if ($isEmbed && is_logged_in()) {
-    echo '<script>window.top.location.href="dashboard.php";</script>';
+    echo '<script>window.top.location.href=' . json_encode(app_url('dashboard')) . ';</script>';
     exit;
 }
 
@@ -408,7 +408,7 @@ require_once __DIR__ . '/includes/header.php';
           <?php if (!empty($SCHOOL_LOGO_URL)): ?>
             <img
               class="auth-side-logo"
-              src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL, $prefix)) ?>"
+              src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL)) ?>"
               alt="<?= htmlspecialchars((string)($SCHOOL_NAME ?? 'School')) ?> logo">
           <?php else: ?>
             <div class="auth-side-mark">WELCOME.</div>
@@ -416,7 +416,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <div class="auth-side-bottom">
           Already a member?
-          <a class="fw-semibold text-decoration-none" href="login.php<?= $isEmbed ? '?embed=1' : '' ?>">Log in</a>
+          <a class="fw-semibold text-decoration-none" href="<?= htmlspecialchars(app_url_embed('login', $isEmbed)) ?>">Log in</a>
         </div>
       </div>
 
@@ -425,7 +425,7 @@ require_once __DIR__ . '/includes/header.php';
           <h1 class="auth-title-sm mb-0">Register</h1>
           <div class="auth-logo-wrap auth-logo-right">
             <?php if (!empty($SCHOOL_LOGO_URL)): ?>
-              <img class="auth-logo-img" src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL, $prefix)) ?>" alt="<?= htmlspecialchars((string)($SCHOOL_NAME ?? 'School')) ?> logo">
+              <img class="auth-logo-img" src="<?= htmlspecialchars(app_asset_or_url((string)$SCHOOL_LOGO_URL)) ?>" alt="<?= htmlspecialchars((string)($SCHOOL_NAME ?? 'School')) ?> logo">
             <?php else: ?>
               <span class="auth-logo-fallback"><i class="bi bi-mortarboard"></i></span>
             <?php endif; ?>
@@ -564,9 +564,9 @@ require_once __DIR__ . '/includes/header.php';
               <input class="form-check-input" type="checkbox" value="1" id="student_agree_terms" name="agree_terms" <?= !empty($_POST['agree_terms']) ? 'checked' : '' ?>>
               <label class="form-check-label" for="student_agree_terms">
                 I agree to the
-                <a href="terms.php<?= $isEmbed ? '?embed=1' : '' ?>" target="_blank" rel="noopener">Terms and Conditions</a>
+                <a href="<?= htmlspecialchars(app_url_embed('terms', $isEmbed)) ?>" target="_blank" rel="noopener">Terms and Conditions</a>
                 and
-                <a href="privacy.php<?= $isEmbed ? '?embed=1' : '' ?>" target="_blank" rel="noopener">Privacy Policy</a>
+                <a href="<?= htmlspecialchars(app_url_embed('privacy', $isEmbed)) ?>" target="_blank" rel="noopener">Privacy Policy</a>
               </label>
             </div>
             <button class="btn btn-primary w-100 register-submit-btn" type="submit" id="studentRegisterBtn" disabled>Register as Student</button>
@@ -642,9 +642,9 @@ require_once __DIR__ . '/includes/header.php';
               <input class="form-check-input" type="checkbox" value="1" id="instructor_agree_terms" name="agree_terms" <?= !empty($_POST['agree_terms']) ? 'checked' : '' ?>>
               <label class="form-check-label" for="instructor_agree_terms">
                 I agree to the
-                <a href="terms.php<?= $isEmbed ? '?embed=1' : '' ?>" target="_blank" rel="noopener">Terms and Conditions</a>
+                <a href="<?= htmlspecialchars(app_url_embed('terms', $isEmbed)) ?>" target="_blank" rel="noopener">Terms and Conditions</a>
                 and
-                <a href="privacy.php<?= $isEmbed ? '?embed=1' : '' ?>" target="_blank" rel="noopener">Privacy Policy</a>
+                <a href="<?= htmlspecialchars(app_url_embed('privacy', $isEmbed)) ?>" target="_blank" rel="noopener">Privacy Policy</a>
               </label>
             </div>
             <button class="btn btn-primary w-100 register-submit-btn" type="submit" id="instructorRegisterBtn" disabled>Register as Instructor</button>
@@ -652,7 +652,7 @@ require_once __DIR__ . '/includes/header.php';
 
           <div class="text-center mt-3 small">
             Already have an account?
-            <a class="fw-semibold text-decoration-none" href="login.php<?= $isEmbed ? '?embed=1' : '' ?>">Login</a>
+            <a class="fw-semibold text-decoration-none" href="<?= htmlspecialchars(app_url_embed('login', $isEmbed)) ?>">Login</a>
           </div>
         </form>
       </div>
