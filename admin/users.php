@@ -176,6 +176,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         }
     }
 }
+// Clear failed-attempt records (Security Alerts panel)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clear_login_attempts') {
+    csrf_validate();
+    $alertUser = trim((string)($_POST['alert_username'] ?? ''));
+    $alertIp = trim((string)($_POST['alert_ip'] ?? ''));
+    if ($alertUser === '' || $alertIp === '') {
+        $err = 'Invalid security alert row.';
+    } else {
+        $removed = clear_login_attempts_for($pdo, $alertUser, $alertIp);
+        $msg = $removed > 0
+            ? 'Cleared failed login records for that account from this IP.'
+            : 'No matching failed attempts to clear (they may have expired).';
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clear_login_attempts_user') {
+    csrf_validate();
+    $alertUser = trim((string)($_POST['alert_username'] ?? ''));
+    if ($alertUser === '') {
+        $err = 'Invalid account.';
+    } else {
+        $removed = clear_login_attempts_for_username($pdo, $alertUser);
+        $msg = $removed > 0
+            ? 'Removed security alerts for account «' . $alertUser . '» (all IPs in the last 30 minutes).'
+            : 'No recent failed attempts for that account (they may have expired).';
+    }
+}
+
 // Decline a pending registration by archiving (no account deletion)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'reject') {
     csrf_validate();
@@ -305,29 +333,8 @@ $pendingStmt = $pdo->query(
 );
 $pendingUsers = $pendingStmt->fetchAll();
 
-// SECURITY FIX (A09): Fetch login security alerts
-$securityAlerts    = [];
-$securityAlertCount = 0;
-try {
-    $secAlerts = $pdo->query(
-        "SELECT Username,
-                IP_Address,
-                COUNT(*) AS Attempt_Count,
-                MAX(Attempted_At) AS Last_Attempt
-         FROM Login_Attempts
-         WHERE Was_Successful = 0
-           AND Attempted_At >= DATE_SUB(NOW(), INTERVAL 30 MINUTE)
-         GROUP BY Username, IP_Address
-         HAVING Attempt_Count >= 5
-         ORDER BY Last_Attempt DESC
-         LIMIT 50"
-    );
-    $securityAlerts    = $secAlerts->fetchAll();
-    $securityAlertCount = count($securityAlerts);
-} catch (Throwable $e) {
-    $securityAlerts    = [];
-    $securityAlertCount = 0;
-}
+$securityAlerts = fetch_login_security_alerts($pdo, 50);
+$securityAlertCount = count($securityAlerts);
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -375,6 +382,8 @@ require_once __DIR__ . '/../includes/header.php';
             <strong>Warning:</strong> The following accounts received 5 or more failed login
             attempts in the last 30 minutes. This may indicate a brute-force or credential-stuffing
             attack. Consider reviewing or temporarily locking these accounts.
+            Use <strong>Clear account alert</strong> to remove alerts for one login ID (all IPs),
+            or <strong>Dismiss IP</strong> for a single row.
           </div>
         </div>
         <div class="table-responsive">
@@ -397,16 +406,22 @@ require_once __DIR__ . '/../includes/header.php';
                   <td class="text-muted small"><?= htmlspecialchars((string)$sa['Last_Attempt']) ?></td>
                   <td>
                     <?php
-                      $tgtStmt = $pdo->prepare("SELECT User_ID, Status FROM User_Accounts WHERE Username = ? LIMIT 1");
-                      $tgtStmt->execute([(string)$sa['Username']]);
+                      $alertLogin = (string)$sa['Username'];
+                      $tgtStmt = $pdo->prepare(
+                          'SELECT User_ID, Status, Role FROM User_Accounts
+                           WHERE Username = ? OR Student_No = ? OR Employee_ID = ?
+                           LIMIT 1'
+                      );
+                      $tgtStmt->execute([$alertLogin, $alertLogin, $alertLogin]);
                       $tgtUser = $tgtStmt->fetch();
                     ?>
+                    <div class="d-flex flex-wrap gap-1">
                     <?php if ($tgtUser && (string)$tgtUser['Status'] === 'Active'): ?>
                       <form method="post" class="d-inline">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="user_id" value="<?= (int)$tgtUser['User_ID'] ?>">
-                        <input type="hidden" name="role" value="Student">
+                        <input type="hidden" name="role" value="<?= htmlspecialchars((string)$tgtUser['Role']) ?>">
                         <input type="hidden" name="status" value="Inactive">
                         <button class="btn btn-sm btn-danger" type="submit"
                                 onclick="return confirm('Temporarily lock this account?');">
@@ -414,10 +429,31 @@ require_once __DIR__ . '/../includes/header.php';
                         </button>
                       </form>
                     <?php elseif ($tgtUser): ?>
-                      <span class="badge text-bg-secondary">Already <?= htmlspecialchars((string)$tgtUser['Status']) ?></span>
+                      <span class="badge text-bg-secondary align-self-center">Already <?= htmlspecialchars((string)$tgtUser['Status']) ?></span>
                     <?php else: ?>
-                      <span class="text-muted small">Unknown user</span>
+                      <span class="text-muted small align-self-center">Unknown user</span>
                     <?php endif; ?>
+                      <form method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">
+                        <input type="hidden" name="action" value="clear_login_attempts_user">
+                        <input type="hidden" name="alert_username" value="<?= htmlspecialchars($alertLogin) ?>">
+                        <button class="btn btn-sm btn-outline-primary" type="submit"
+                                onclick="return confirm('Remove all security alerts for this account (every IP)?');"
+                                title="Clear every alert row for this Student/Employee ID">
+                          Clear account alert
+                        </button>
+                      </form>
+                      <form method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">
+                        <input type="hidden" name="action" value="clear_login_attempts">
+                        <input type="hidden" name="alert_username" value="<?= htmlspecialchars($alertLogin) ?>">
+                        <input type="hidden" name="alert_ip" value="<?= htmlspecialchars((string)$sa['IP_Address']) ?>">
+                        <button class="btn btn-sm btn-outline-secondary" type="submit"
+                                title="Clear only this username + IP row">
+                          Dismiss IP
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               <?php endforeach; ?>

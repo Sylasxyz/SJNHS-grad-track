@@ -192,25 +192,8 @@ if ($role === 'Admin') {
         $adminPendingUsers = [];
     }
 
-    try {
-        $securityAlerts = $pdo->query(
-            "SELECT Username,
-                    IP_Address,
-                    COUNT(*) AS Attempt_Count,
-                    MAX(Attempted_At) AS Last_Attempt
-             FROM Login_Attempts
-             WHERE Was_Successful = 0
-               AND Attempted_At >= DATE_SUB(NOW(), INTERVAL 30 MINUTE)
-             GROUP BY Username, IP_Address
-             HAVING Attempt_Count >= 5
-             ORDER BY Last_Attempt DESC
-             LIMIT 10"
-        )->fetchAll();
-        $securityAlertCount = count($securityAlerts);
-    } catch (Throwable $e) {
-        $securityAlerts = [];
-        $securityAlertCount = 0;
-    }
+    $securityAlerts = fetch_login_security_alerts($pdo, 10);
+    $securityAlertCount = count($securityAlerts);
 }
 
 if ($role === 'Instructor' || $role === 'Admin' || $role === 'Principal') {

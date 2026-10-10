@@ -57,3 +57,4 @@ Visiting `*.php` directly redirects to the clean URL.
 - Do not commit `mail_config.local.php` or `.env` with secrets.
 - Set `APP_DEBUG=0` in production.
 - Remove or protect `test_smtp.php` on production.
+- Failed logins are stored in `Login_Attempts` (created automatically on first DB connection). Admins see **Security Alerts** on the dashboard and under **Verify / Manage Users** (5+ failures per username/IP in 30 minutes).

@@ -22,6 +22,8 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
     ]);
+    require_once __DIR__ . '/login_security.php';
+    ensure_login_attempts_table($pdo);
 } catch (PDOException $e) {
     http_response_code(500);
     $onRailway = app_env('RAILWAY_ENVIRONMENT') !== null || app_env('RAILWAY_PROJECT_ID') !== null;

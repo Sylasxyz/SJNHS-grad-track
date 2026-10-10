@@ -49,7 +49,7 @@ try {
     ensure_registration_name_columns($pdo);
     $pdo->query("SELECT Email, First_Name, Last_Name, Middle_Initial, Name_Suffix, Student_No, Employee_ID FROM User_Accounts LIMIT 1");
 } catch (PDOException $e) {
-    $errors[] = 'Database update required: run database/migrate_split_user_fullname_add_names.sql, database/migrate_add_user_email_fullname.sql (if needed), database/migrate_add_user_ids.sql, database/migrate_add_middle_initial.sql, and database/migrate_name_suffix_and_mi2.sql in phpMyAdmin, then refresh this page.';
+    $errors[] = 'Database not ready on this server. Import your XAMPP graduate_tracking export into Railway MySQL, or run database/import_for_railway.sql in HeidiSQL (see database/RAILWAY-DATABASE.md), then refresh this page.';
 }
 
 $allowedSuffixes = ['JR', 'SR', 'II', 'III', 'IV'];

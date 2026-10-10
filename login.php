@@ -20,94 +20,14 @@ $pageTitle = 'Login';
 $error     = '';
 $username  = '';
 
-// ─── SECURITY FIX (A07 / A09): Login attempt tracking ─────────────────────
-
-function get_client_ip(): string
-{
-    foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
-        $val = (string)($_SERVER[$key] ?? '');
-        if ($val !== '') {
-            $ip = trim(explode(',', $val)[0]);
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                return $ip;
-            }
-        }
-    }
-    return '0.0.0.0';
-}
-
-function ensure_login_attempts_table(PDO $pdo): void
-{
-    static $ready = false;
-    if ($ready) {
-        return;
-    }
-    try {
-        $pdo->exec(
-            "CREATE TABLE IF NOT EXISTS Login_Attempts (
-                Attempt_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                Username VARCHAR(50) NOT NULL,
-                IP_Address VARCHAR(45) NOT NULL,
-                Was_Successful TINYINT(1) NOT NULL DEFAULT 0,
-                Attempted_At TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (Attempt_ID),
-                KEY idx_login_attempts_user_time (Username, Attempted_At),
-                KEY idx_login_attempts_ip_time (IP_Address, Attempted_At),
-                KEY idx_login_attempts_failed_time (Was_Successful, Attempted_At)
-             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
-        );
-        $ready = true;
-    } catch (Throwable $e) {
-        // Table may already exist or DB user lacks CREATE privilege.
-    }
-}
-
-function count_recent_failures(PDO $pdo, string $username, string $ip, int $windowMinutes = 30): int
-{
-    // Count by username only. Do NOT OR with IP — shared IPs (::1 / school LAN)
-    // would lock every account after a few wrong tries on any one username.
-    try {
-        ensure_login_attempts_table($pdo);
-        if ($username === '') {
-            return 0;
-        }
-        $stmt = $pdo->prepare(
-            "SELECT COUNT(*) FROM Login_Attempts
-             WHERE Username = ?
-               AND Was_Successful = 0
-               AND Attempted_At >= DATE_SUB(NOW(), INTERVAL ? MINUTE)"
-        );
-        $stmt->execute([$username, $windowMinutes]);
-        return (int)$stmt->fetchColumn();
-    } catch (Throwable $e) {
-        return 0;
-    }
-}
-
-function record_login_attempt(PDO $pdo, string $username, string $ip, bool $success): void
-{
-    try {
-        ensure_login_attempts_table($pdo);
-        $stmt = $pdo->prepare(
-            'INSERT INTO Login_Attempts (Username, IP_Address, Was_Successful) VALUES (?, ?, ?)'
-        );
-        $stmt->execute([substr($username, 0, 50), substr($ip, 0, 45), $success ? 1 : 0]);
-    } catch (Throwable $e) {
-        // Silently ignore if table not ready yet
-    }
-}
-
-const MAX_FAILURES    = 5;
-const LOCKOUT_MINUTES = 5;
-
 // ─── Handle POST ───────────────────────────────────────────────────────────
 
-$MAX_ATTEMPTS  = MAX_FAILURES;
-$LOCKOUT_SECS  = LOCKOUT_MINUTES * 60;
+$MAX_ATTEMPTS  = LOGIN_MAX_FAILURES;
+$LOCKOUT_SECS  = LOGIN_LOCKOUT_MINUTES * 60;
 $attempts      = (int)($_SESSION['login_attempts']     ?? 0);
 $lockoutUntil  = (int)($_SESSION['login_lockout_until'] ?? 0);
 $isLockedOut   = ($lockoutUntil > time());
-$clientIp      = get_client_ip();
+$clientIp      = login_client_ip();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_validate();
@@ -116,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string)($_POST['password'] ?? '');
 
     // Also respect recent DB failures (works across browsers / devices).
-    $dbFailures = ($username !== '') ? count_recent_failures($pdo, $username, $clientIp, 30) : 0;
+    $dbFailures = ($username !== '') ? count_recent_login_failures($pdo, $username) : 0;
     if (!$isLockedOut && $dbFailures >= $MAX_ATTEMPTS) {
         $_SESSION['login_lockout_until'] = time() + $LOCKOUT_SECS;
         $isLockedOut = true;
@@ -155,12 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$user || !password_verify($password, (string)$user['Password'])) {
             record_login_attempt($pdo, $username !== '' ? $username : '(blank)', $clientIp, false);
             $_SESSION['login_attempts'] = $attempts + 1;
-            $totalFails = count_recent_failures($pdo, $username !== '' ? $username : '(blank)', $clientIp, 30);
+            $totalFails = count_recent_login_failures($pdo, $username !== '' ? $username : '(blank)');
 
             if ($_SESSION['login_attempts'] >= $MAX_ATTEMPTS || $totalFails >= $MAX_ATTEMPTS) {
                 $_SESSION['login_lockout_until'] = time() + $LOCKOUT_SECS;
                 $_SESSION['login_attempts'] = 0;
-                $error = 'Too many failed attempts. Login is locked for ' . LOCKOUT_MINUTES . ' minutes.';
+                $error = 'Too many failed attempts. Login is locked for ' . LOGIN_LOCKOUT_MINUTES . ' minutes.';
             } else {
                 $left = max(1, $MAX_ATTEMPTS - max($_SESSION['login_attempts'], $totalFails));
                 $error = "Invalid Student ID / Employee ID or password. {$left} attempt(s) left before lockout.";
@@ -230,8 +150,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php
           // Show countdown warning on 3rd and 4th failed attempt
           if ($error && $username !== '') {
-              $clientIp  = get_client_ip();
-              $remaining = MAX_FAILURES - count_recent_failures($pdo, $username, $clientIp, LOCKOUT_MINUTES);
+              $remaining = LOGIN_MAX_FAILURES - count_recent_login_failures($pdo, $username);
               if ($remaining > 0 && $remaining <= 2) {
                   echo '<div class="alert alert-warning d-flex align-items-center gap-2">'
                      . '<i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>'
