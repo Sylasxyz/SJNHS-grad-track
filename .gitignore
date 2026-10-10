@@ -1,0 +1,26 @@
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Secrets (any folder depth)
+**/mail_config.local.php
+
+# Logs
+logs/
+**/logs/
+**/*.log
+
+# Dependencies / local tools
+vendor/
+composer.phar
+composer-setup.php
+
+# User uploads (use Railway volume in production)
+uploads/profiles/*
+uploads/announcements/*
+!uploads/profiles/.gitkeep
+!uploads/announcements/.gitkeep
+
+# Duplicate nested copy of the app (deploy from repo root only)
+Capstoneafter/
