@@ -20,7 +20,7 @@ $SMTP_PASS    = '';
 $SMTP_TIMEOUT = 25;
 
 $MAIL_ALWAYS_LOG = true;
-$MAIL_SHOW_RESET_LINK_ON_FAILURE = true;
+$MAIL_SHOW_RESET_LINK_ON_FAILURE = false;
 
 $localMail = __DIR__ . '/mail_config.local.php';
 if (is_file($localMail)) {
@@ -43,7 +43,7 @@ $envMailMap = [
 foreach ($envMailMap as $key => $_type) {
     $v = app_env($key);
     if ($v !== null && $v !== '') {
-        $$key = $v;
+        $$key = trim((string)$v);
     }
 }
 if (($p = app_env('SMTP_PORT')) !== null && $p !== '' && is_numeric($p)) {

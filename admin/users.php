@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'appro
                 $mailResult = send_app_email($to, $subject, $body);
                 $msg = !empty($mailResult['ok'])
                     ? 'User approved and notification email sent.'
-                    : 'User approved. Email could not be sent (check SMTP in includes/mail_config.php or logs/mail.log).';
+                    : 'User approved. Notification email could not be sent (check server mail settings or logs/mail.log).';
             } else {
                 $msg = 'User approved, but no valid email was found for notification.';
             }

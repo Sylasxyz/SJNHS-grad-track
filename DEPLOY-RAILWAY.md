@@ -18,8 +18,11 @@ Push the folder that contains this `Dockerfile` (this directory: `Capstoneafter/
 | Variable | Production value |
 |----------|------------------|
 | `APP_DEBUG` | `0` |
-| `SMTP_PASS` | Gmail App Password (if using email) |
+| `SMTP_PASS` | **Required** for email — Gmail [App Password](https://myaccount.google.com/apppasswords) (16 chars, 2-Step Verification on) |
+| `SMTP_ENABLED` | `1` |
 | `MAIL_SHOW_RESET_LINK_ON_FAILURE` | `0` |
+
+After deploy, log in as **Admin** → open `/admin/mail_test` to send a test message (errors show only to admins, not students).
 
 MySQL variables are usually injected automatically when the database is linked.
 

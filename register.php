@@ -18,6 +18,10 @@ $pageTitle = 'Register';
 $errors = [];
 $warnings = [];
 $success = '';
+$flashErr = pull_flash_error();
+if ($flashErr !== '') {
+    $errors[] = $flashErr;
+}
 
 function ensure_registration_name_columns(PDO $pdo): void
 {
@@ -388,7 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $success = 'Registration submitted. A confirmation email was sent to ' . $email . '. Please wait for Admin approval before logging in.';
                 } else {
                     $success = 'Registration submitted successfully. Please wait for Admin approval before logging in.';
-                    $warnings[] = 'We could not send the confirmation email to ' . $email . ' right now (school Gmail login was rejected). Your registration is still saved—you do not need to register again. An admin can still approve your account; you may not get email until the school fixes SMTP (Gmail App Password in mail_config.local.php).';
+                    $warnings[] = mail_public_delivery_notice();
                 }
                 $_POST = [];
             }

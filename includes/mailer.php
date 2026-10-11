@@ -3,6 +3,41 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/mail_config.php';
 
+function mail_on_railway(): bool
+{
+    return app_env('RAILWAY_ENVIRONMENT') !== null
+        || app_env('RAILWAY_PROJECT_ID') !== null
+        || app_env('RAILWAY_SERVICE_NAME') !== null;
+}
+
+/** Whether SMTP is configured enough to attempt Gmail (or other) AUTH. */
+function mail_smtp_credentials_ready(): bool
+{
+    global $SMTP_ENABLED, $SMTP_HOST, $SMTP_USER, $SMTP_PASS;
+    if (empty($SMTP_ENABLED)) {
+        return false;
+    }
+    $pass = preg_replace('/\s+/', '', (string)($SMTP_PASS ?? '')) ?? '';
+    return trim((string)($SMTP_HOST ?? '')) !== ''
+        && trim((string)($SMTP_USER ?? '')) !== ''
+        && $pass !== '';
+}
+
+/** Staff-only hint written to logs (never show to public forms). */
+function mail_operator_setup_hint(): string
+{
+    if (mail_on_railway()) {
+        return 'Railway web service: set SMTP_PASS (Gmail App Password) and SMTP_ENABLED=1, then redeploy.';
+    }
+    return 'Local: set SMTP_PASS in includes/mail_config.local.php (gitignored).';
+}
+
+/** Safe message for students/public when outbound mail fails. */
+function mail_public_delivery_notice(): string
+{
+    return 'We could not send a confirmation email right now. Your registration was received—please wait for administrator approval. You do not need to register again. Contact the school office if you need assistance.';
+}
+
 /**
  * @return array{ok:bool,via:string,error:string}
  */
@@ -25,13 +60,11 @@ function send_app_email(string $to, string $subject, string $body, string $from 
 
     $result = ['ok' => false, 'via' => 'none', 'error' => ''];
 
+    $smtpPass = preg_replace('/\s+/', '', (string)($SMTP_PASS ?? '')) ?? '';
     $smtpReady = !empty($SMTP_ENABLED)
         && trim((string)($SMTP_HOST ?? '')) !== ''
         && trim((string)($SMTP_USER ?? '')) !== ''
-        && trim((string)($SMTP_PASS ?? '')) !== '';
-
-    // Gmail App Passwords are often copied with spaces; SMTP AUTH needs the 16 chars only.
-    $smtpPass = preg_replace('/\s+/', '', (string)($SMTP_PASS ?? '')) ?? '';
+        && $smtpPass !== '';
 
     if ($smtpReady) {
         $smtp = smtp_send_email(
@@ -100,6 +133,13 @@ function send_app_email(string $to, string $subject, string $body, string $from 
 
     if (!empty($MAIL_ALWAYS_LOG) || !$result['ok']) {
         mail_write_log($to, $subject, $body, $result);
+        if (!$result['ok'] && !mail_smtp_credentials_ready()) {
+            mail_write_log('operator', 'SMTP setup', mail_operator_setup_hint(), [
+                'ok' => false,
+                'via' => 'config',
+                'error' => 'Missing SMTP_PASS or SMTP disabled',
+            ]);
+        }
     }
 
     return $result;

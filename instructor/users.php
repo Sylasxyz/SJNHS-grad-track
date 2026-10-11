@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'appro
                 $mailResult = send_app_email($to, $subject, $body);
                 $msg = !empty($mailResult['ok'])
                     ? 'Student approved and notification email sent.'
-                    : 'Student approved. Email could not be sent (check SMTP in includes/mail_config.php or logs/mail.log).';
+                    : 'Student approved. Notification email could not be sent (check server mail settings or logs/mail.log).';
             } else {
                 $msg = 'Student approved, but no valid email was found for notification.';
             }
