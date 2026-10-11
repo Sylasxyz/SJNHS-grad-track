@@ -18,11 +18,33 @@ Push the folder that contains this `Dockerfile` (this directory: `Capstoneafter/
 | Variable | Production value |
 |----------|------------------|
 | `APP_DEBUG` | `0` |
-| `SMTP_PASS` | **Required** for email — Gmail [App Password](https://myaccount.google.com/apppasswords) (16 chars, 2-Step Verification on) |
+| `BREVO_API_KEY` | **Recommended on Railway** — Brevo → SMTP & API → **API Keys** (starts with `xkeysib-`) |
+| `MAIL_FROM_EMAIL` | Brevo **verified sender** (e.g. `gradtrack.sjnhs@gmail.com`) |
 | `SMTP_ENABLED` | `1` |
 | `MAIL_SHOW_RESET_LINK_ON_FAILURE` | `0` |
 
+Optional (local/XAMPP Gmail SMTP): `SMTP_PASS` = Gmail App Password.
+
 After deploy, log in as **Admin** → open `/admin/mail_test` to send a test message (errors show only to admins, not students).
+
+### Email on Railway (Brevo HTTPS — recommended)
+
+Railway often **blocks SMTP ports 587/465** (connection timeout). The app sends via **Brevo Transactional API** on **HTTPS (443)** when `BREVO_API_KEY` is set.
+
+1. [brevo.com](https://www.brevo.com) → verify sender under **Senders**.
+2. **SMTP & API** → **API Keys** → **Generate a new API key** (not the SMTP key `xsmtpsib-…`).
+3. Railway **web service** variables:
+
+| Variable | Value |
+|----------|--------|
+| `BREVO_API_KEY` | API key (`xkeysib-…`) |
+| `MAIL_FROM_EMAIL` | Verified sender email |
+| `MAIL_FROM_NAME` | `San Josef NHS Graduate Tracking` |
+| `SMTP_ENABLED` | `1` |
+
+4. Redeploy → `/admin/mail_test` → expect `via brevo-api` on success.
+
+Optional legacy SMTP (often fails on Railway): `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` (Brevo SMTP login/key).
 
 MySQL variables are usually injected automatically when the database is linked.
 

@@ -17,7 +17,7 @@ $SMTP_PORT    = 587;
 $SMTP_SECURE  = 'tls';   // 'tls' (port 587) or 'ssl' (port 465)
 $SMTP_USER    = 'gradtrack.sjnhs@gmail.com';
 $SMTP_PASS    = '';
-$SMTP_TIMEOUT = 25;
+$SMTP_TIMEOUT = 30;
 
 $MAIL_ALWAYS_LOG = true;
 $MAIL_SHOW_RESET_LINK_ON_FAILURE = false;
@@ -60,3 +60,6 @@ $envShowReset = app_env('MAIL_SHOW_RESET_LINK_ON_FAILURE');
 if ($envShowReset !== null && $envShowReset !== '') {
     $MAIL_SHOW_RESET_LINK_ON_FAILURE = in_array(strtolower($envShowReset), ['1', 'true', 'yes', 'on'], true);
 }
+
+// Brevo Transactional API (HTTPS port 443 — use on Railway when SMTP ports time out)
+$BREVO_API_KEY = trim((string)(app_env('BREVO_API_KEY') ?? ''));

@@ -27,9 +27,60 @@ function mail_smtp_credentials_ready(): bool
 function mail_operator_setup_hint(): string
 {
     if (mail_on_railway()) {
-        return 'Railway web service: set SMTP_PASS (Gmail App Password) and SMTP_ENABLED=1, then redeploy.';
+        return 'Railway web service: set BREVO_API_KEY (Brevo → SMTP & API → API Keys), MAIL_FROM_EMAIL (verified sender), SMTP_ENABLED=1, then redeploy. SMTP ports are often blocked; API uses HTTPS.';
     }
-    return 'Local: set SMTP_PASS in includes/mail_config.local.php (gitignored).';
+    return 'Local: set SMTP_PASS in includes/mail_config.local.php (gitignored), or BREVO_API_KEY for API.';
+}
+
+function mail_is_brevo_smtp(): bool
+{
+    global $SMTP_HOST;
+    return str_contains(strtolower(trim((string)($SMTP_HOST ?? ''))), 'brevo');
+}
+
+function mail_brevo_api_ready(): bool
+{
+    global $BREVO_API_KEY;
+    if (isset($BREVO_API_KEY) && trim((string)$BREVO_API_KEY) !== '') {
+        return true;
+    }
+    return trim((string)(app_env('BREVO_API_KEY') ?? '')) !== '';
+}
+
+function mail_brevo_api_key(): string
+{
+    global $BREVO_API_KEY;
+    if (isset($BREVO_API_KEY) && trim((string)$BREVO_API_KEY) !== '') {
+        return trim((string)$BREVO_API_KEY);
+    }
+    return trim((string)(app_env('BREVO_API_KEY') ?? ''));
+}
+
+function mail_resolve_from_email(string $fromOverride): string
+{
+    global $MAIL_FROM_EMAIL, $SMTP_USER;
+
+    $default = trim((string)($MAIL_FROM_EMAIL ?? ''));
+    $from = trim($fromOverride !== '' ? $fromOverride : $default);
+    if ($from === '' || !filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        $from = $default;
+    }
+
+    // Brevo: From must be a verified sender (MAIL_FROM_EMAIL), not @smtp-brevo.com login.
+    if (mail_brevo_api_ready() || mail_is_brevo_smtp()) {
+        return $from !== '' ? $from : $default;
+    }
+
+    if (!empty($SMTP_USER) && filter_var((string)$SMTP_USER, FILTER_VALIDATE_EMAIL)) {
+        return (string)$SMTP_USER;
+    }
+
+    return $from !== '' ? $from : $default;
+}
+
+function mail_outbound_ready(): bool
+{
+    return mail_smtp_credentials_ready() || mail_brevo_api_ready();
 }
 
 /** Safe message for students/public when outbound mail fails. */
@@ -41,9 +92,126 @@ function mail_public_delivery_notice(): string
 /**
  * @return array{ok:bool,via:string,error:string}
  */
+function brevo_api_send(
+    string $to,
+    string $subject,
+    string $body,
+    string $fromEmail,
+    string $fromName
+): array {
+    $apiKey = mail_brevo_api_key();
+    if ($apiKey === '') {
+        return ['ok' => false, 'via' => 'brevo-api', 'error' => 'BREVO_API_KEY is not set.'];
+    }
+    if (!filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
+        return [
+            'ok' => false,
+            'via' => 'brevo-api',
+            'error' => 'Invalid sender (set MAIL_FROM_EMAIL to your Brevo verified sender).',
+        ];
+    }
+
+    $payload = json_encode([
+        'sender'      => ['name' => $fromName, 'email' => $fromEmail],
+        'to'          => [['email' => $to]],
+        'subject'     => $subject,
+        'textContent' => $body,
+    ], JSON_UNESCAPED_UNICODE);
+    if ($payload === false) {
+        return ['ok' => false, 'via' => 'brevo-api', 'error' => 'Could not encode email payload.'];
+    }
+
+    $http = brevo_http_post('https://api.brevo.com/v3/smtp/email', $apiKey, $payload);
+    if ($http['error'] !== '') {
+        return ['ok' => false, 'via' => 'brevo-api', 'error' => 'Brevo API request failed: ' . $http['error']];
+    }
+
+    $code = (int)$http['code'];
+    if ($code >= 200 && $code < 300) {
+        return ['ok' => true, 'via' => 'brevo-api', 'error' => ''];
+    }
+
+    $detail = brevo_api_error_message((string)$http['body']);
+    return ['ok' => false, 'via' => 'brevo-api', 'error' => 'Brevo API HTTP ' . $code . ': ' . $detail];
+}
+
+function brevo_api_error_message(string $body): string
+{
+    $body = trim($body);
+    if ($body === '') {
+        return 'empty response';
+    }
+    $json = json_decode($body, true);
+    if (is_array($json)) {
+        $msg = (string)($json['message'] ?? $json['error'] ?? '');
+        if ($msg !== '') {
+            return $msg;
+        }
+    }
+    return strlen($body) > 200 ? substr($body, 0, 200) . '…' : $body;
+}
+
+/**
+ * @return array{code:int,body:string,error:string}
+ */
+function brevo_http_post(string $url, string $apiKey, string $jsonBody): array
+{
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        if ($ch === false) {
+            return ['code' => 0, 'body' => '', 'error' => 'curl_init failed'];
+        }
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $jsonBody,
+            CURLOPT_HTTPHEADER     => [
+                'accept: application/json',
+                'api-key: ' . $apiKey,
+                'content-type: application/json',
+            ],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 25,
+            CURLOPT_CONNECTTIMEOUT => 15,
+        ]);
+        $body = curl_exec($ch);
+        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $err = curl_error($ch);
+        curl_close($ch);
+        if ($body === false) {
+            return ['code' => 0, 'body' => '', 'error' => $err !== '' ? $err : 'curl_exec failed'];
+        }
+        return ['code' => $code, 'body' => (string)$body, 'error' => ''];
+    }
+
+    $ctx = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => "accept: application/json\r\n"
+                . 'api-key: ' . $apiKey . "\r\n"
+                . "content-type: application/json\r\n"
+                . 'Content-Length: ' . strlen($jsonBody) . "\r\n",
+            'content'       => $jsonBody,
+            'timeout'       => 25,
+            'ignore_errors' => true,
+        ],
+    ]);
+    $body = @file_get_contents($url, false, $ctx);
+    $code = 0;
+    if (isset($http_response_header[0]) && preg_match('/\d{3}/', (string)$http_response_header[0], $m)) {
+        $code = (int)$m[0];
+    }
+    if ($body === false) {
+        return ['code' => 0, 'body' => '', 'error' => 'HTTP request failed (enable curl extension or allow_url_fopen).'];
+    }
+    return ['code' => $code, 'body' => (string)$body, 'error' => ''];
+}
+
+/**
+ * @return array{ok:bool,via:string,error:string}
+ */
 function send_app_email(string $to, string $subject, string $body, string $from = '', bool $quick = false): array
 {
-    global $MAIL_FROM_EMAIL, $MAIL_FROM_NAME, $SMTP_ENABLED, $SMTP_HOST, $SMTP_PORT, $SMTP_SECURE,
+    global $MAIL_FROM_NAME, $SMTP_ENABLED, $SMTP_HOST, $SMTP_PORT, $SMTP_SECURE,
            $SMTP_USER, $SMTP_PASS, $SMTP_TIMEOUT, $MAIL_ALWAYS_LOG;
 
     $to = trim($to);
@@ -51,14 +219,27 @@ function send_app_email(string $to, string $subject, string $body, string $from 
         return ['ok' => false, 'via' => 'none', 'error' => 'Invalid recipient email.'];
     }
 
-    $fromEmail = trim($from !== '' ? $from : (string)($MAIL_FROM_EMAIL ?? 'no-reply@sjnsh.local'));
+    $fromEmail = mail_resolve_from_email($from);
     $fromName = trim((string)($MAIL_FROM_NAME ?? 'Graduate Tracking System'));
-    if (!empty($SMTP_USER) && filter_var((string)$SMTP_USER, FILTER_VALIDATE_EMAIL)) {
-        // Many SMTP providers require From to match the authenticated account.
-        $fromEmail = (string)$SMTP_USER;
-    }
 
     $result = ['ok' => false, 'via' => 'none', 'error' => ''];
+
+    $useApiFirst = mail_brevo_api_ready() && (mail_on_railway() || mail_is_brevo_smtp());
+    if ($useApiFirst) {
+        $result = brevo_api_send($to, $subject, $body, $fromEmail, $fromName);
+        if (!empty($result['ok'])) {
+            if (!empty($MAIL_ALWAYS_LOG)) {
+                mail_write_log($to, $subject, $body, $result);
+            }
+            return $result;
+        }
+        if (mail_on_railway()) {
+            if (!empty($MAIL_ALWAYS_LOG) || !$result['ok']) {
+                mail_write_log($to, $subject, $body, $result);
+            }
+            return $result;
+        }
+    }
 
     $smtpPass = preg_replace('/\s+/', '', (string)($SMTP_PASS ?? '')) ?? '';
     $smtpReady = !empty($SMTP_ENABLED)
@@ -96,7 +277,6 @@ function send_app_email(string $to, string $subject, string $body, string $from 
                 break;
             }
             $lastError = (string)($attempt['error'] ?? '');
-            // Stop after auth failure — wrong password won't fix on another port
             if (stripos($lastError, 'authentication failed') !== false) {
                 $smtp = $attempt;
                 break;
@@ -107,11 +287,26 @@ function send_app_email(string $to, string $subject, string $body, string $from 
             $result = ['ok' => true, 'via' => 'smtp', 'error' => ''];
         } else {
             $errText = $lastError !== '' ? $lastError : (string)($smtp['error'] ?? 'SMTP failed');
-            if (mail_on_railway() && smtp_looks_like_network_block($errText)) {
-                $errText .= ' Cloud hosts sometimes cannot reach Gmail SMTP; use Brevo/SendGrid SMTP (see DEPLOY-RAILWAY.md) or verify SMTP_PASS is a Gmail App Password.';
+            if (mail_brevo_api_ready() && smtp_looks_like_network_block($errText)) {
+                $apiFallback = brevo_api_send($to, $subject, $body, $fromEmail, $fromName);
+                if (!empty($apiFallback['ok'])) {
+                    $result = $apiFallback;
+                } else {
+                    $result = [
+                        'ok' => false,
+                        'via' => 'smtp',
+                        'error' => $errText . ' Fallback Brevo API: ' . ($apiFallback['error'] ?? 'failed'),
+                    ];
+                }
+            } else {
+                if (mail_on_railway() && smtp_looks_like_network_block($errText)) {
+                    $errText .= ' Set BREVO_API_KEY on Railway (HTTPS) — SMTP ports are often blocked.';
+                }
+                $result = ['ok' => false, 'via' => 'smtp', 'error' => $errText];
             }
-            $result = ['ok' => false, 'via' => 'smtp', 'error' => $errText];
         }
+    } elseif (mail_brevo_api_ready()) {
+        $result = brevo_api_send($to, $subject, $body, $fromEmail, $fromName);
     } else {
         $headers = [];
         $headers[] = 'MIME-Version: 1.0';
@@ -139,11 +334,11 @@ function send_app_email(string $to, string $subject, string $body, string $from 
 
     if (!empty($MAIL_ALWAYS_LOG) || !$result['ok']) {
         mail_write_log($to, $subject, $body, $result);
-        if (!$result['ok'] && !mail_smtp_credentials_ready()) {
-            mail_write_log('operator', 'SMTP setup', mail_operator_setup_hint(), [
+        if (!$result['ok'] && !mail_outbound_ready()) {
+            mail_write_log('operator', 'Mail setup', mail_operator_setup_hint(), [
                 'ok' => false,
                 'via' => 'config',
-                'error' => 'Missing SMTP_PASS or SMTP disabled',
+                'error' => 'Missing BREVO_API_KEY or SMTP credentials',
             ]);
         }
     }
@@ -253,10 +448,14 @@ function mail_admin_diagnostics(): array
     $lines = [];
     $lines[] = 'Hosting: ' . (mail_on_railway() ? 'Railway' : 'local/other');
     $lines[] = 'SMTP enabled: ' . (!empty($SMTP_ENABLED) ? 'yes' : 'no');
-    $lines[] = 'Credentials loaded: ' . (mail_smtp_credentials_ready() ? 'yes' : 'no');
+    $lines[] = 'Outbound ready (SMTP or Brevo API): ' . (mail_outbound_ready() ? 'yes' : 'no');
+    $lines[] = 'BREVO_API_KEY in environment: ' . (mail_brevo_api_ready() ? 'yes' : 'no');
+    $lines[] = 'SMTP credentials loaded: ' . (mail_smtp_credentials_ready() ? 'yes' : 'no');
     $passFromEnv = app_env('SMTP_PASS');
     $lines[] = 'SMTP_PASS in environment: ' . ($passFromEnv !== null && trim($passFromEnv) !== '' ? 'yes' : 'no');
+    $lines[] = 'cURL extension: ' . (function_exists('curl_init') ? 'yes' : 'no');
     $lines[] = 'OpenSSL extension: ' . (extension_loaded('openssl') ? 'yes' : 'no');
+    $lines[] = 'HTTPS api.brevo.com:443: ' . smtp_tcp_probe('api.brevo.com', 443, 'ssl', 8);
     $host = trim((string)($SMTP_HOST ?? ''));
     if ($host !== '') {
         $lines[] = 'Host ' . $host . ':465 (SSL): ' . smtp_tcp_probe($host, 465, 'ssl');
