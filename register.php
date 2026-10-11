@@ -350,7 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = $e->getMessage();
                 if ($sqlState === '23000' || str_contains($msg, 'Duplicate')) {
                     if (str_contains($msg, 'uq_user_accounts_email') || str_contains(strtolower($msg), 'email')) {
-                        $errors[] = 'This email address is already registered.';
+                        $errors[] = 'This email address is already registered. Contact the school office if you need assistance.';
                     } elseif (str_contains($msg, 'uq_user_accounts_username') || str_contains(strtolower($msg), 'username')) {
                         $errors[] = $roleChoice === 'Student'
                             ? 'This Student ID is already registered.'
