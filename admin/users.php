@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/app_config.php';
 require_once __DIR__ . '/../includes/db_config.php';
 require_once __DIR__ . '/../includes/csrf.php';
 require_once __DIR__ . '/../includes/mailer.php';
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'appro
                 $mailResult = send_app_email($to, $subject, $body);
                 $msg = !empty($mailResult['ok'])
                     ? 'User approved and notification email sent.'
-                    : 'User approved. Notification email could not be sent (check server mail settings or logs/mail.log).';
+                    : 'User approved. ' . msg_staff_email_not_sent();
             } else {
                 $msg = 'User approved, but no valid email was found for notification.';
             }
@@ -320,7 +321,7 @@ foreach ($users as $u) {
     }
 }
 if ($invalidStatusCount > 0) {
-    $schemaWarn = 'Some user records have invalid/blank status. Please run the status migration (Status enum must include Pending).';
+    $schemaWarn = msg_staff_schema_pending();
 }
 
 // Direct query for pending panel (includes blank legacy status so it becomes visible to admin).

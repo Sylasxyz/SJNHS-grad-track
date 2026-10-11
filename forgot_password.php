@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/app_config.php';
 require_once __DIR__ . '/includes/db_config.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/csrf.php';
@@ -77,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     global $MAIL_SHOW_RESET_LINK_ON_FAILURE;
                     if (!$mailResult['ok'] && !empty($MAIL_SHOW_RESET_LINK_ON_FAILURE)) {
                         $debugCode = $code;
-                        $success = 'We could not deliver email automatically (SMTP may not be configured yet). Use the verification code below. It expires in 15 minutes.';
+                        $success = msg_password_reset_show_code_success();
                         $emailState = 'success';
                     } elseif ($mailResult['ok']) {
                         $success = 'A 6-digit verification code has been sent to ' . $emailValue . '. Please check your inbox (and spam folder).';
@@ -169,9 +170,9 @@ require_once __DIR__ . '/includes/header.php';
 
       <?php if ($debugCode !== ''): ?>
         <div class="alert alert-warning py-2">
-          <div class="fw-semibold mb-1">Local verification code</div>
+          <div class="fw-semibold mb-1">Verification code</div>
           <div class="fs-4 fw-bold letter-spacing"><?= htmlspecialchars($debugCode) ?></div>
-          <div class="small mt-2 mb-0">Configure SMTP in <code>includes/mail_config.php</code> to send real emails.</div>
+          <div class="small mt-2 mb-0"><?= htmlspecialchars(msg_password_reset_code_fallback()) ?></div>
         </div>
       <?php endif; ?>
 

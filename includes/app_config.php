@@ -44,4 +44,29 @@ $ADMIN_REGISTER_ALLOWED_IPS = [
 
 // Mail/SMTP settings live in includes/mail_config.php (used by password reset + approvals).
 
+/** User-safe copy — no paths, host names, or deployment hints. */
+function msg_registration_unavailable(): string
+{
+    return 'Registration is temporarily unavailable. Please try again later or contact the school office for assistance.';
+}
+
+function msg_staff_schema_pending(): string
+{
+    return 'Some dashboard features are unavailable until the system is fully configured. Please contact the administrator.';
+}
+
+function msg_staff_email_not_sent(): string
+{
+    return 'The change was saved, but the notification email could not be delivered. Please inform the user manually if needed.';
+}
+
+function msg_password_reset_code_fallback(): string
+{
+    return 'Email delivery is unavailable. Use the verification code below to continue resetting your password.';
+}
+
+function msg_password_reset_show_code_success(): string
+{
+    return 'We could not send the verification email. Use the code below to continue. It expires in 15 minutes.';
+}
 

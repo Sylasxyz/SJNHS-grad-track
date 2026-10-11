@@ -53,7 +53,7 @@ try {
     ensure_registration_name_columns($pdo);
     $pdo->query("SELECT Email, First_Name, Last_Name, Middle_Initial, Name_Suffix, Student_No, Employee_ID FROM User_Accounts LIMIT 1");
 } catch (PDOException $e) {
-    $errors[] = 'Database not ready on this server. Import your XAMPP graduate_tracking export into Railway MySQL, or run database/import_for_railway.sql in HeidiSQL (see database/RAILWAY-DATABASE.md), then refresh this page.';
+    $errors[] = msg_registration_unavailable();
 }
 
 $allowedSuffixes = ['JR', 'SR', 'II', 'III', 'IV'];
@@ -310,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         registration_reclaim_inactive_accounts($pdo, $email, $username);
 
         if (registration_email_exists($pdo, $email)) {
-            $errors[] = 'This email address is already registered. If you had an old account, ask an Admin to remove the Active record or permanently delete it in Admin → Manage Users.';
+            $errors[] = 'This email address is already registered. Contact the school office if you need assistance.';
         }
 
         if ($roleChoice === 'Student' && $studentNo !== '') {

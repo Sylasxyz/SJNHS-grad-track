@@ -17,7 +17,7 @@ if (!$isEmbed) {
 }
 
 $pageTitle = 'Login';
-$error     = '';
+$error     = pull_flash_error();
 $username  = '';
 
 // ─── Handle POST ───────────────────────────────────────────────────────────

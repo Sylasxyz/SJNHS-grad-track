@@ -27,17 +27,12 @@ try {
 } catch (PDOException $e) {
     http_response_code(500);
     $onRailway = app_env('RAILWAY_ENVIRONMENT') !== null || app_env('RAILWAY_PROJECT_ID') !== null;
-    $localHost = in_array($DB_HOST, ['127.0.0.1', 'localhost', '::1'], true);
-    if ($DB_DEBUG) {
+    if ($DB_DEBUG && !$onRailway) {
         $msg = 'Database connection failed: ' . $e->getMessage();
         $msg .= ' (host=' . $DB_HOST . ', port=' . $DB_PORT . ', database=' . $DB_NAME . ')';
-        if ($onRailway && ($localHost || str_contains($e->getMessage(), 'Connection refused'))) {
-            $msg .= ' — On Railway, open your web service → Variables → add references from the MySQL service '
-                . '(MYSQLHOST, MYSQLPORT, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE or MYSQL_URL), then redeploy.';
-        }
         echo htmlspecialchars($msg);
     } else {
-        echo 'Database connection failed.';
+        echo 'Database connection failed. Please try again later or contact the school office.';
     }
     exit;
 }

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/app_config.php';
 require_once __DIR__ . '/includes/db_config.php';
 require_once __DIR__ . '/includes/dashboard_analytics.php';
 
@@ -65,7 +66,7 @@ if ($role === 'Instructor' || $role === 'Admin') {
     try {
         $pdo->query("SELECT Course, Is_Verified FROM Graduate_Profiles LIMIT 1");
     } catch (PDOException $e) {
-        $instSchemaErrors[] = 'Database update required: please run database/migrate_add_profile_course.sql and database/migrate_add_profile_verification.sql in phpMyAdmin, then refresh this page.';
+        $instSchemaErrors[] = msg_staff_schema_pending();
     }
 
     if (!$instSchemaErrors) {

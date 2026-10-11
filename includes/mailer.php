@@ -56,6 +56,22 @@ function mail_brevo_api_key(): string
     return trim((string)(app_env('BREVO_API_KEY') ?? ''));
 }
 
+/** Brevo REST API keys start with xkeysib-; SMTP keys (xsmtpsib-) do not work for the API. */
+function mail_brevo_api_key_problem(): string
+{
+    $key = mail_brevo_api_key();
+    if ($key === '') {
+        return 'BREVO_API_KEY is not set on Railway.';
+    }
+    if (str_starts_with($key, 'xsmtpsib-')) {
+        return 'BREVO_API_KEY looks like an SMTP key (xsmtpsib-). Create an API key (xkeysib-) under Brevo → SMTP & API → API Keys.';
+    }
+    if (!str_starts_with($key, 'xkeysib-')) {
+        return 'BREVO_API_KEY should start with xkeysib- (Brevo → SMTP & API → API Keys → Generate).';
+    }
+    return '';
+}
+
 function mail_resolve_from_email(string $fromOverride): string
 {
     global $MAIL_FROM_EMAIL, $SMTP_USER;
@@ -99,10 +115,11 @@ function brevo_api_send(
     string $fromEmail,
     string $fromName
 ): array {
-    $apiKey = mail_brevo_api_key();
-    if ($apiKey === '') {
-        return ['ok' => false, 'via' => 'brevo-api', 'error' => 'BREVO_API_KEY is not set.'];
+    $keyProblem = mail_brevo_api_key_problem();
+    if ($keyProblem !== '') {
+        return ['ok' => false, 'via' => 'brevo-api', 'error' => $keyProblem];
     }
+    $apiKey = mail_brevo_api_key();
     if (!filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
         return [
             'ok' => false,
@@ -132,6 +149,9 @@ function brevo_api_send(
     }
 
     $detail = brevo_api_error_message((string)$http['body']);
+    if ($code === 401) {
+        $detail .= ' Check BREVO_API_KEY: use a new API key (xkeysib-) from Brevo → API Keys, not the SMTP key.';
+    }
     return ['ok' => false, 'via' => 'brevo-api', 'error' => 'Brevo API HTTP ' . $code . ': ' . $detail];
 }
 
@@ -450,6 +470,10 @@ function mail_admin_diagnostics(): array
     $lines[] = 'SMTP enabled: ' . (!empty($SMTP_ENABLED) ? 'yes' : 'no');
     $lines[] = 'Outbound ready (SMTP or Brevo API): ' . (mail_outbound_ready() ? 'yes' : 'no');
     $lines[] = 'BREVO_API_KEY in environment: ' . (mail_brevo_api_ready() ? 'yes' : 'no');
+    $brevoKeyHint = mail_brevo_api_key_problem();
+    if ($brevoKeyHint !== '') {
+        $lines[] = 'BREVO_API_KEY note: ' . $brevoKeyHint;
+    }
     $lines[] = 'SMTP credentials loaded: ' . (mail_smtp_credentials_ready() ? 'yes' : 'no');
     $passFromEnv = app_env('SMTP_PASS');
     $lines[] = 'SMTP_PASS in environment: ' . ($passFromEnv !== null && trim($passFromEnv) !== '' ? 'yes' : 'no');
