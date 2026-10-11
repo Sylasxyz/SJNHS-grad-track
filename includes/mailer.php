@@ -41,7 +41,7 @@ function mail_public_delivery_notice(): string
 /**
  * @return array{ok:bool,via:string,error:string}
  */
-function send_app_email(string $to, string $subject, string $body, string $from = ''): array
+function send_app_email(string $to, string $subject, string $body, string $from = '', bool $quick = false): array
 {
     global $MAIL_FROM_EMAIL, $MAIL_FROM_NAME, $SMTP_ENABLED, $SMTP_HOST, $SMTP_PORT, $SMTP_SECURE,
            $SMTP_USER, $SMTP_PASS, $SMTP_TIMEOUT, $MAIL_ALWAYS_LOG;
@@ -67,44 +67,50 @@ function send_app_email(string $to, string $subject, string $body, string $from 
         && $smtpPass !== '';
 
     if ($smtpReady) {
-        $smtp = smtp_send_email(
-            (string)$SMTP_HOST,
-            (int)$SMTP_PORT,
-            (string)$SMTP_SECURE,
-            (string)$SMTP_USER,
-            $smtpPass,
-            (int)($SMTP_TIMEOUT ?? 20),
-            $fromEmail,
-            $fromName,
-            $to,
-            $subject,
-            $body
-        );
+        $host = (string)$SMTP_HOST;
+        $timeout = $quick ? min(10, (int)($SMTP_TIMEOUT ?? 30)) : (int)($SMTP_TIMEOUT ?? 30);
+        $smtp = ['ok' => false, 'error' => 'SMTP delivery failed.'];
+        $lastError = '';
 
-        // Gmail on Windows/XAMPP: retry SSL:465 if STARTTLS:587 auth fails
-        if (!$smtp['ok'] && smtp_should_retry_ssl($smtp['error'], (string)$SMTP_SECURE, (int)$SMTP_PORT)) {
-            $smtp = smtp_send_email(
-                (string)$SMTP_HOST,
-                465,
-                'ssl',
+        $plans = smtp_attempt_plans((int)$SMTP_PORT, (string)$SMTP_SECURE);
+        if ($quick) {
+            $plans = array_slice($plans, 0, 1);
+        }
+
+        foreach ($plans as [$port, $secure]) {
+            $attempt = smtp_send_email(
+                $host,
+                $port,
+                $secure,
                 (string)$SMTP_USER,
                 $smtpPass,
-                (int)($SMTP_TIMEOUT ?? 20),
+                $timeout,
                 $fromEmail,
                 $fromName,
                 $to,
                 $subject,
                 $body
             );
-            if ($smtp['ok']) {
-                $smtp['error'] = '';
+            if (!empty($attempt['ok'])) {
+                $smtp = $attempt;
+                break;
+            }
+            $lastError = (string)($attempt['error'] ?? '');
+            // Stop after auth failure — wrong password won't fix on another port
+            if (stripos($lastError, 'authentication failed') !== false) {
+                $smtp = $attempt;
+                break;
             }
         }
 
-        if ($smtp['ok']) {
+        if (!empty($smtp['ok'])) {
             $result = ['ok' => true, 'via' => 'smtp', 'error' => ''];
         } else {
-            $result = ['ok' => false, 'via' => 'smtp', 'error' => $smtp['error']];
+            $errText = $lastError !== '' ? $lastError : (string)($smtp['error'] ?? 'SMTP failed');
+            if (mail_on_railway() && smtp_looks_like_network_block($errText)) {
+                $errText .= ' Cloud hosts sometimes cannot reach Gmail SMTP; use Brevo/SendGrid SMTP (see DEPLOY-RAILWAY.md) or verify SMTP_PASS is a Gmail App Password.';
+            }
+            $result = ['ok' => false, 'via' => 'smtp', 'error' => $errText];
         }
     } else {
         $headers = [];
@@ -178,15 +184,87 @@ function mail_write_log(string $to, string $subject, string $body, array $result
     @file_put_contents($logFile, $entry, FILE_APPEND);
 }
 
-function smtp_should_retry_ssl(string $error, string $secure, int $port): bool
+/** @return list<array{0:int,1:string}> */
+function smtp_attempt_plans(int $configuredPort, string $configuredSecure): array
 {
-    if ($secure === 'ssl' || $port === 465) {
-        return false;
+    $configuredSecure = strtolower(trim($configuredSecure));
+    $plans = [[$configuredPort, $configuredSecure]];
+    foreach ([[465, 'ssl'], [587, 'tls']] as $alt) {
+        if ($alt[0] !== $configuredPort || $alt[1] !== $configuredSecure) {
+            $plans[] = $alt;
+        }
     }
+    if (mail_on_railway()) {
+        usort($plans, static function (array $a, array $b): int {
+            $score = static fn (array $p): int => ($p[0] === 465 ? 0 : ($p[0] === 587 ? 1 : 2));
+            return $score($a) <=> $score($b);
+        });
+    }
+    return $plans;
+}
+
+function smtp_looks_like_network_block(string $error): bool
+{
     $error = strtolower($error);
-    return str_contains($error, 'authentication failed')
-        || str_contains($error, 'tls')
-        || str_contains($error, 'connect failed');
+    return str_contains($error, 'connect failed')
+        || str_contains($error, 'timed out')
+        || str_contains($error, 'connection refused')
+        || str_contains($error, 'network is unreachable');
+}
+
+function smtp_stream_context()
+{
+    return stream_context_create([
+        'ssl' => [
+            'verify_peer'       => true,
+            'verify_peer_name'  => true,
+            'allow_self_signed' => false,
+        ],
+    ]);
+}
+
+/** Quick TCP/TLS check for admin diagnostics (no AUTH). */
+function smtp_tcp_probe(string $host, int $port, string $secure, int $timeout = 12): string
+{
+    $secure = strtolower(trim($secure));
+    $remote = ($secure === 'ssl' ? 'ssl://' : '') . $host . ':' . $port;
+    $errno = 0;
+    $errstr = '';
+    $fp = @stream_socket_client(
+        $remote,
+        $errno,
+        $errstr,
+        max(5, $timeout),
+        STREAM_CLIENT_CONNECT,
+        smtp_stream_context()
+    );
+    if (!$fp) {
+        return "failed ({$errno}: {$errstr})";
+    }
+    fclose($fp);
+    return 'reachable';
+}
+
+/** @return list<string> */
+function mail_admin_diagnostics(): array
+{
+    global $SMTP_HOST, $SMTP_PORT, $SMTP_SECURE, $SMTP_USER, $SMTP_ENABLED;
+
+    $lines = [];
+    $lines[] = 'Hosting: ' . (mail_on_railway() ? 'Railway' : 'local/other');
+    $lines[] = 'SMTP enabled: ' . (!empty($SMTP_ENABLED) ? 'yes' : 'no');
+    $lines[] = 'Credentials loaded: ' . (mail_smtp_credentials_ready() ? 'yes' : 'no');
+    $passFromEnv = app_env('SMTP_PASS');
+    $lines[] = 'SMTP_PASS in environment: ' . ($passFromEnv !== null && trim($passFromEnv) !== '' ? 'yes' : 'no');
+    $lines[] = 'OpenSSL extension: ' . (extension_loaded('openssl') ? 'yes' : 'no');
+    $host = trim((string)($SMTP_HOST ?? ''));
+    if ($host !== '') {
+        $lines[] = 'Host ' . $host . ':465 (SSL): ' . smtp_tcp_probe($host, 465, 'ssl');
+        $lines[] = 'Host ' . $host . ':587 (plain): ' . smtp_tcp_probe($host, 587, '');
+    }
+    $lines[] = 'Configured: ' . $host . ':' . (int)($SMTP_PORT ?? 0) . ' (' . (string)($SMTP_SECURE ?? '') . ') user ' . (string)($SMTP_USER ?? '');
+
+    return $lines;
 }
 
 /**
@@ -212,7 +290,14 @@ function smtp_send_email(
 
     $errno = 0;
     $errstr = '';
-    $fp = @stream_socket_client($remote, $errno, $errstr, max(5, $timeout), STREAM_CLIENT_CONNECT);
+    $fp = @stream_socket_client(
+        $remote,
+        $errno,
+        $errstr,
+        max(5, $timeout),
+        STREAM_CLIENT_CONNECT,
+        smtp_stream_context()
+    );
     if (!$fp) {
         return ['ok' => false, 'error' => "SMTP connect failed: {$errstr} ({$errno})"];
     }
@@ -252,7 +337,7 @@ function smtp_send_email(
         return ['ok' => false, 'error' => $err];
     }
 
-    $ehloHost = 'localhost';
+    $ehloHost = preg_replace('/[^a-zA-Z0-9.-]/', '', (string)(app_env('RAILWAY_PUBLIC_DOMAIN') ?? 'localhost')) ?: 'localhost';
     $write('EHLO ' . $ehloHost);
     $ehlo = $read();
     if ($err = $expect($ehlo, [250])) {

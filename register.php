@@ -387,7 +387,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "If you did not register for an account, please ignore this email or contact the school.\n\n" .
                 "— San Josef National High School\n";
 
-                $mailResult = send_app_email($email, $subject, $body);
+                $mailResult = send_app_email($email, $subject, $body, '', true);
                 if (!empty($mailResult['ok'])) {
                     $success = 'Registration submitted. A confirmation email was sent to ' . $email . '. Please wait for Admin approval before logging in.';
                 } else {
