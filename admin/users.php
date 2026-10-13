@@ -66,9 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
     $role = (string)($_POST['role'] ?? '');
     $status = (string)($_POST['status'] ?? 'Active');
 
-    $allowedRoles = ['Admin', 'Instructor', 'Student', 'Principal'];
+    $allowedRoles = ['Admin', 'Instructor', 'Student'];
     $allowedStatus = ['Pending', 'Active', 'Inactive', 'Archived'];
-    $idLabel = $role === 'Student' ? 'Student ID' : (in_array($role, ['Instructor', 'Principal'], true) ? 'Employee ID' : 'Username');
+    $idLabel = $role === 'Student' ? 'Student ID' : ($role === 'Instructor' ? 'Employee ID' : 'Username');
 
     if ($firstName === '' || strlen($firstName) < 2) {
         $err = 'First name must be at least 2 characters.';
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
         $err = 'Invalid status.';
     } else {
         $studentNo = $role === 'Student' ? $username : null;
-        $employeeId = in_array($role, ['Instructor', 'Principal'], true) ? $username : null;
+        $employeeId = $role === 'Instructor' ? $username : null;
         try {
             $check = $pdo->prepare('SELECT User_ID FROM User_Accounts WHERE Username = ? OR Email = ? OR Student_No = ? OR Employee_ID = ? LIMIT 1');
             $check->execute([$username, $email, $studentNo, $employeeId]);
@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     $userId = (int)($_POST['user_id'] ?? 0);
     $role = (string)($_POST['role'] ?? '');
     $status = (string)($_POST['status'] ?? '');
-    $allowedRoles = ['Admin', 'Instructor', 'Student', 'Principal'];
+    $allowedRoles = ['Admin', 'Instructor', 'Student'];
     $allowedStatus = ['Pending', 'Active', 'Inactive', 'Archived'];
 
     if ($userId <= 0) {
@@ -550,7 +550,6 @@ require_once __DIR__ . '/../includes/header.php';
             <option value="" <?= $createRole === '' ? 'selected' : '' ?>>Select Role</option>
             <option value="Student" <?= $createRole === 'Student' ? 'selected' : '' ?>>Student</option>
             <option value="Instructor" <?= $createRole === 'Instructor' ? 'selected' : '' ?>>Instructor</option>
-            <option value="Principal" <?= $createRole === 'Principal' ? 'selected' : '' ?>>Principal</option>
             <option value="Admin" <?= $createRole === 'Admin' ? 'selected' : '' ?>>Admin</option>
           </select>
         </div>
@@ -644,7 +643,7 @@ require_once __DIR__ . '/../includes/header.php';
                       <input type="hidden" name="user_id" value="<?= (int)$u['User_ID'] ?>">
                       <input type="hidden" name="action" value="update">
                       <select class="form-select form-select-sm" name="role">
-                        <?php foreach (['Student','Instructor','Principal','Admin'] as $r): ?>
+                        <?php foreach (['Student','Instructor','Admin'] as $r): ?>
                           <option <?= ($u['Role'] === $r) ? 'selected' : '' ?>><?= htmlspecialchars($r) ?></option>
                         <?php endforeach; ?>
                       </select>
@@ -705,7 +704,7 @@ require_once __DIR__ . '/../includes/header.php';
       if (role === 'Student') {
         idEl.placeholder = 'Student ID';
         idEl.disabled = false;
-      } else if (role === 'Instructor' || role === 'Principal') {
+      } else if (role === 'Instructor') {
         idEl.placeholder = 'Employee ID';
         idEl.disabled = false;
       } else if (role === 'Admin') {

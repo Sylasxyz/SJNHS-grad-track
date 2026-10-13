@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/dashboard_analytics.php';
 require_once __DIR__ . '/includes/report_helpers.php';
 
 require_login();
-require_roles(['Admin', 'Instructor', 'Principal']);
+require_roles(['Admin', 'Instructor']);
 
 $user = current_user();
 $role = (string)($user['Role'] ?? '');

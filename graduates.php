@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db_config.php';
 require_once __DIR__ . '/includes/csrf.php';
 
-require_roles(['Instructor', 'Admin', 'Principal']);
+require_roles(['Instructor', 'Admin']);
 $me = current_user();
 $isAdmin = (($me['Role'] ?? '') === 'Admin');
 $canManage = can_manage_records();

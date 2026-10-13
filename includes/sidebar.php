@@ -26,37 +26,17 @@ $role = (string)($user['Role'] ?? '');
       <span>Announcements</span>
     </a>
 
-    <?php if ($role !== 'Principal'): ?>
-      <a class="app-sidebar-link <?= app_route_is('messages') ? 'active' : '' ?>"
-         href="<?= htmlspecialchars(app_url('messages')) ?>">
-        <i class="bi bi-chat-dots"></i>
-        <span>Messages</span>
-      </a>
-    <?php endif; ?>
+    <a class="app-sidebar-link <?= app_route_is('messages') ? 'active' : '' ?>"
+       href="<?= htmlspecialchars(app_url('messages')) ?>">
+      <i class="bi bi-chat-dots"></i>
+      <span>Messages</span>
+    </a>
 
     <?php if ($role === 'Student'): ?>
       <a class="app-sidebar-link <?= app_route_is('profile') ? 'active' : '' ?>"
          href="<?= htmlspecialchars(app_url('profile')) ?>">
         <i class="bi bi-person-workspace"></i>
         <span>My Graduate Profile</span>
-      </a>
-    <?php endif; ?>
-
-    <?php if ($role === 'Principal'): ?>
-      <a class="app-sidebar-link <?= app_route_is('graduates') ? 'active' : '' ?>"
-         href="<?= htmlspecialchars(app_url('graduates')) ?>">
-        <i class="bi bi-search"></i>
-        <span>Graduate Records</span>
-      </a>
-      <a class="app-sidebar-link <?= app_route_is('analytics') ? 'active' : '' ?>"
-         href="<?= htmlspecialchars(app_url('analytics')) ?>">
-        <i class="bi bi-graph-up-arrow"></i>
-        <span>Analytics</span>
-      </a>
-      <a class="app-sidebar-link <?= app_route_is('admin/reports') ? 'active' : '' ?>"
-         href="<?= htmlspecialchars(app_url('admin/reports')) ?>">
-        <i class="bi bi-file-earmark-bar-graph"></i>
-        <span>Reports</span>
       </a>
     <?php endif; ?>
 

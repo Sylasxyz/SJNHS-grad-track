@@ -21,6 +21,11 @@ function require_login(): void
     if (!is_logged_in()) {
         app_redirect('login');
     }
+    $role = (string)(current_user()['Role'] ?? '');
+    if ($role === 'Principal') {
+        logout_user();
+        app_redirect('login');
+    }
 }
 
 function require_roles(array $roles): void
@@ -42,21 +47,16 @@ function current_role(): string
     return (string)($user['Role'] ?? '');
 }
 
-function is_principal(): bool
-{
-    return current_role() === 'Principal';
-}
-
 /** Admin / Instructor — can change data. */
 function can_manage_records(): bool
 {
     return in_array(current_role(), ['Admin', 'Instructor'], true);
 }
 
-/** Admin / Instructor / Principal — can view oversight pages. */
+/** Admin / Instructor — can view staff oversight pages. */
 function can_view_oversight(): bool
 {
-    return in_array(current_role(), ['Admin', 'Instructor', 'Principal'], true);
+    return in_array(current_role(), ['Admin', 'Instructor'], true);
 }
 
 function redirect_logged_in_user(): void

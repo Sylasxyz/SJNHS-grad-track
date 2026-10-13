@@ -11,11 +11,6 @@ $user = current_user();
 $myId = (int)($user['User_ID'] ?? 0);
 $myRole = (string)($user['Role'] ?? '');
 
-if ($myRole === 'Principal') {
-    app_redirect('dashboard');
-    exit;
-}
-
 $pageTitle = 'Messages';
 $errors = [];
 $success = '';

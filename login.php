@@ -85,6 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $left = max(1, $MAX_ATTEMPTS - max($_SESSION['login_attempts'], $totalFails));
                 $error = "Invalid Student ID / Employee ID or password. {$left} attempt(s) left before lockout.";
             }
+        } elseif (($user['Role'] ?? '') === 'Principal') {
+            record_login_attempt($pdo, $username, $clientIp, false);
+            $error = 'This account type is no longer supported. Contact the administrator.';
         } elseif (($user['Status'] ?? '') === 'Pending') {
             record_login_attempt($pdo, $username, $clientIp, false);
             $error = 'Your registration is pending verification. Please wait for an Admin to approve your account.';

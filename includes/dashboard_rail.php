@@ -39,18 +39,6 @@ function rail_active(string $route): bool
       </a>
     <?php endif; ?>
 
-    <?php if ($role === 'Principal'): ?>
-      <a href="<?= htmlspecialchars(rail_href('graduates.php')) ?>" class="dashboard-rail-icon <?= rail_active('graduates.php') ? 'is-active' : '' ?>">
-        <i class="bi bi-search"></i><span class="dashboard-rail-label">Graduate Records</span>
-      </a>
-      <a href="<?= htmlspecialchars(rail_href('analytics.php')) ?>" class="dashboard-rail-icon <?= rail_active('analytics.php') ? 'is-active' : '' ?>">
-        <i class="bi bi-graph-up-arrow"></i><span class="dashboard-rail-label">Analytics</span>
-      </a>
-      <a href="<?= htmlspecialchars(rail_href('admin/reports.php')) ?>" class="dashboard-rail-icon <?= rail_active('admin/reports.php') ? 'is-active' : '' ?>">
-        <i class="bi bi-file-earmark-bar-graph"></i><span class="dashboard-rail-label">Reports</span>
-      </a>
-    <?php endif; ?>
-
     <?php if ($role === 'Instructor' || $role === 'Admin'): ?>
       <a href="<?= htmlspecialchars(rail_href('messages.php')) ?>" class="dashboard-rail-icon <?= rail_active('messages.php') ? 'is-active' : '' ?>">
         <i class="bi bi-chat-dots"></i><span class="dashboard-rail-label">Messages</span>

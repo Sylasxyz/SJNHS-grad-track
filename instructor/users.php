@@ -7,7 +7,7 @@ require_once __DIR__ . '/../includes/db_config.php';
 require_once __DIR__ . '/../includes/csrf.php';
 require_once __DIR__ . '/../includes/mailer.php';
 
-// Instructor can manage Student accounts only (Principal can use Instructor role)
+// Instructor can manage Student accounts only
 require_roles(['Instructor', 'Admin']);
 $me = current_user();
 $isAdmin = (($me['Role'] ?? '') === 'Admin');

@@ -39,7 +39,7 @@ function format_dashboard_date(?string $value): string
 }
 
 $analytics = null;
-if ($role === 'Admin' || $role === 'Instructor' || $role === 'Principal') {
+if ($role === 'Admin' || $role === 'Instructor') {
     try {
         $analytics = compute_dashboard_analytics($pdo, 0, 0);
     } catch (Throwable $e) {
@@ -197,7 +197,7 @@ if ($role === 'Admin') {
     $securityAlertCount = count($securityAlerts);
 }
 
-if ($role === 'Instructor' || $role === 'Admin' || $role === 'Principal') {
+if ($role === 'Instructor' || $role === 'Admin') {
     try {
         $directoryRows = $pdo->query(
             "SELECT gp.Full_Name, gp.Course, gp.Batch_Year, gp.Employment_Status, gp.Is_Verified
@@ -434,15 +434,11 @@ require_once __DIR__ . '/includes/header.php';
         <h2 class="h5 mb-0">
           <?php if ($role === 'Instructor'): ?>
             Awaiting Verification
-          <?php elseif ($role === 'Principal'): ?>
-            Overview
           <?php else: ?>
             Pending Users
           <?php endif; ?>
         </h2>
         <?php if ($role === 'Instructor'): ?>
-          <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i></a>
-        <?php elseif ($role === 'Principal'): ?>
           <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i></a>
         <?php else: ?>
           <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars(app_url('admin/users')) ?>"><i class="bi bi-plus"></i></a>
@@ -460,17 +456,6 @@ require_once __DIR__ . '/includes/header.php';
               </a>
             <?php endforeach; ?>
           </div>
-        <?php endif; ?>
-      <?php elseif ($role === 'Principal'): ?>
-        <div class="text-muted small mb-2">View-only access. You can review records and analytics.</div>
-        <?php if ($analytics): ?>
-          <div class="small">
-            <div class="d-flex justify-content-between py-1 border-bottom"><span>Profiles</span><strong><?= (int)$analytics['total_profiles'] ?></strong></div>
-            <div class="d-flex justify-content-between py-1 border-bottom"><span>Employment rate</span><strong><?= (float)$analytics['employment_rate'] ?>%</strong></div>
-            <div class="d-flex justify-content-between py-1"><span>Verified</span><strong><?= (float)$analytics['verification_rate'] ?>%</strong></div>
-          </div>
-        <?php else: ?>
-          <div class="text-muted small">No analytics available yet.</div>
         <?php endif; ?>
       <?php else: ?>
         <?php if (!$adminPendingUsers): ?>
@@ -491,12 +476,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="app-card p-3 dashboard-bottom-left">
       <h3 class="h6 mb-2">Features</h3>
       <div class="row g-2">
-        <?php if ($role === 'Principal'): ?>
-          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i><span>Graduate Records</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('announcements')) ?>"><i class="bi bi-megaphone"></i><span>Announcements</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('analytics')) ?>"><i class="bi bi-graph-up-arrow"></i><span>Analytics</span></a></div>
-          <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('admin/reports')) ?>"><i class="bi bi-file-earmark-bar-graph"></i><span>View Reports</span></a></div>
-        <?php elseif ($role === 'Instructor'): ?>
+        <?php if ($role === 'Instructor'): ?>
           <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('messages')) ?>"><i class="bi bi-chat-dots"></i><span>Messages</span></a></div>
           <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('graduates')) ?>"><i class="bi bi-search"></i><span>Search / Filter</span></a></div>
           <div class="col-12"><a class="dashboard-action-card" href="<?= htmlspecialchars(app_url('announcement_create')) ?>"><i class="bi bi-pencil-square"></i><span>Post Announcement</span></a></div>
