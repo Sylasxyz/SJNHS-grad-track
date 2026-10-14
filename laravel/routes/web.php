@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Admin\SecurityAlertController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Instructor\StudentAccountController;
+use App\Models\Announcement;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -29,6 +31,22 @@ Route::post('/reset-password', [PasswordResetController::class, 'updatePassword'
 Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements');
+    Route::get('/announcements/create', [AnnouncementController::class, 'create'])
+        ->can('create', Announcement::class)->name('announcements.create');
+    Route::post('/announcements', [AnnouncementController::class, 'store'])
+        ->can('create', Announcement::class)->name('announcements.store');
+    Route::whereNumber('announcement')->group(function () {
+        Route::get('/announcements/{announcement}/image', [AnnouncementController::class, 'image'])
+            ->can('view', 'announcement')->name('announcements.image');
+        Route::patch('/announcements/{announcement}/archive', [AnnouncementController::class, 'archive'])
+            ->can('archive', 'announcement')->name('announcements.archive');
+        Route::patch('/announcements/{announcement}/restore', [AnnouncementController::class, 'restore'])
+            ->can('restore', 'announcement')->name('announcements.restore');
+        Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])
+            ->can('delete', 'announcement')->name('announcements.destroy');
+    });
 
     // Role-only areas; each converted feature adds its routes to the matching group.
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {

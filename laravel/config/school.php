@@ -8,6 +8,10 @@ return [
     // Base URL of the legacy vanilla PHP app, used for pages not yet converted.
     'legacy_url' => rtrim(env('LEGACY_APP_URL', 'http://localhost/Capstoneafter/Capstoneafter'), '/'),
 
+    // Folder that contains uploads/ (the legacy app root). Image_Path values such as
+    // "uploads/announcements/a3_1700000000.jpg" are relative to it, shared by both apps.
+    'uploads_root' => rtrim(env('LEGACY_UPLOADS_ROOT', dirname(base_path())), '/\\'),
+
     'login' => [
         'failure_window_minutes' => 30,
         'max_failures' => 5,
