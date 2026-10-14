@@ -74,7 +74,8 @@
           <form method="get" action="{{ route('messages') }}" class="mb-3">
             <input type="hidden" name="compose" value="1">
             <div class="input-group input-group-sm">
-              <input class="form-control" type="search" name="q" placeholder="Search by name or Student ID"
+              <input class="form-control" type="search" name="q"
+                     placeholder="{{ $isStudent ? 'Search by Instructor or Admin name' : 'Search by name or Student ID' }}"
                      value="{{ $search }}">
               <button class="btn btn-outline-secondary" type="submit">Search</button>
             </div>
