@@ -3,10 +3,10 @@
     $role = (string) auth()->user()?->Role;
     $isStaff = in_array($role, ['Instructor', 'Admin'], true);
 
-    // [route name once converted, legacy page, icon, label]
+    // [route name once converted, legacy page, icon, label, optional active-route pattern]
     $links = [['dashboard', 'dashboard', 'bi-house-door-fill', 'Dashboard'],
               ['announcements', 'announcements', 'bi-megaphone', 'Announcements'],
-              ['messages', 'messages', 'bi-chat-dots', 'Messages']];
+              ['messages', 'messages', 'bi-chat-dots', 'Messages', 'messages*']];
 
     if ($role === 'Student') {
         $links[] = ['student.profile', 'profile', 'bi-person-badge', 'My Graduate Profile'];
@@ -32,8 +32,9 @@
     <i class="bi bi-mortarboard-fill"></i>
   </button>
   <div class="dashboard-rail-icons">
-    @foreach ($links as [$routeName, $legacyPath, $icon, $label])
-      <a href="{{ AppLink::to($routeName, $legacyPath) }}" class="dashboard-rail-icon {{ AppLink::isActive($routeName) ? 'is-active' : '' }}">
+    @foreach ($links as $link)
+      @php([$routeName, $legacyPath, $icon, $label] = $link)
+      <a href="{{ AppLink::to($routeName, $legacyPath) }}" class="dashboard-rail-icon {{ AppLink::isActive($link[4] ?? $routeName) ? 'is-active' : '' }}">
         <i class="bi {{ $icon }}"></i><span class="dashboard-rail-label">{{ $label }}</span>
       </a>
     @endforeach

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Instructor\StudentAccountController;
+use App\Http\Controllers\MessageController;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,15 @@ Route::middleware(['auth', 'active'])->group(function () {
             ->can('restore', 'announcement')->name('announcements.restore');
         Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])
             ->can('delete', 'announcement')->name('announcements.destroy');
+    });
+
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages');
+    Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::whereNumber('partner')->group(function () {
+        Route::get('/messages/{partner}', [MessageController::class, 'show'])
+            ->can('openConversation', 'partner')->name('messages.show');
+        Route::post('/messages/{partner}', [MessageController::class, 'reply'])
+            ->can('message', 'partner')->name('messages.reply');
     });
 
     // Role-only areas; each converted feature adds its routes to the matching group.
