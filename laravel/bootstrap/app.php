@@ -24,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(fn () => route('dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontFlash(['new_password']);
+
         // An expired form (CSRF token mismatch, already mapped to HTTP 419) sends the user back with a readable message.
         $exceptions->render(function (HttpException $e, Request $request) {
             if (! $e->getPrevious() instanceof TokenMismatchException) {

@@ -39,9 +39,7 @@ class LoginThrottle
             return LoginAttempt::query()
                 ->where('Username', mb_substr($username, 0, 50))
                 ->where('Was_Successful', 0)
-                ->whereRaw('Attempted_At >= DATE_SUB(NOW(), INTERVAL ? MINUTE)', [
-                    (int) config('school.login.failure_window_minutes'),
-                ])
+                ->whereRaw('Attempted_At >= DATE_SUB(NOW(), INTERVAL ? MINUTE)', [$this->failureWindowMinutes()])
                 ->count();
         } catch (Throwable) {
             return 0;
@@ -60,6 +58,52 @@ class LoginThrottle
         } catch (Throwable) {
             // A missing table must never block login.
         }
+    }
+
+    /**
+     * Admin Security Alerts: failed attempts grouped by username + IP within the window.
+     *
+     * @return list<\stdClass> rows with Username, IP_Address, Attempt_Count, Last_Attempt
+     */
+    public function securityAlerts(int $limit = 50): array
+    {
+        try {
+            return LoginAttempt::query()
+                ->toBase()
+                ->selectRaw('Username, IP_Address, COUNT(*) AS Attempt_Count, MAX(Attempted_At) AS Last_Attempt')
+                ->where('Was_Successful', 0)
+                ->whereRaw('Attempted_At >= DATE_SUB(NOW(), INTERVAL ? MINUTE)', [$this->failureWindowMinutes()])
+                ->groupBy('Username', 'IP_Address')
+                ->havingRaw('COUNT(*) >= ?', [(int) config('school.login.alert_threshold')])
+                ->orderByDesc('Last_Attempt')
+                ->limit(max(1, min(200, $limit)))
+                ->get()
+                ->all();
+        } catch (Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * Deletes recent failed attempts for a login ID, from one IP or (when $ip is null) from every IP.
+     */
+    public function clearFailures(string $username, ?string $ip = null): int
+    {
+        try {
+            return LoginAttempt::query()
+                ->where('Username', mb_substr($username, 0, 50))
+                ->when($ip !== null, fn ($query) => $query->where('IP_Address', mb_substr($ip, 0, 45)))
+                ->where('Was_Successful', 0)
+                ->whereRaw('Attempted_At >= DATE_SUB(NOW(), INTERVAL ? MINUTE)', [$this->failureWindowMinutes()])
+                ->delete();
+        } catch (Throwable) {
+            return 0;
+        }
+    }
+
+    private function failureWindowMinutes(): int
+    {
+        return (int) config('school.login.failure_window_minutes');
     }
 
     public function sessionAttempts(): int

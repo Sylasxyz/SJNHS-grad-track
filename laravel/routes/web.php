@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\SecurityAlertController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Instructor\StudentAccountController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -36,7 +39,29 @@ Route::middleware(['auth', 'active'])->group(function () {
         //
     });
 
+    // Manage Student Accounts: like the legacy instructor/users.php, Admins may use it too.
+    Route::middleware('role:instructor,admin')->prefix('instructor')->name('instructor.')->group(function () {
+        Route::get('/users', [StudentAccountController::class, 'index'])->name('users');
+        Route::patch('/users/{student}/approve', [StudentAccountController::class, 'approve'])
+            ->whereNumber('student')->can('manageStudent', 'student')->name('users.approve');
+        Route::patch('/users/{student}/status', [StudentAccountController::class, 'updateStatus'])
+            ->whereNumber('student')->can('manageStudent', 'student')->name('users.status');
+    });
+
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        //
+        Route::get('/users', [UserController::class, 'index'])->name('users');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
+        Route::middleware('can:manage,user')->whereNumber('user')->group(function () {
+            Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
+            Route::patch('/users/{user}/access', [UserController::class, 'updateAccess'])->name('users.access');
+            Route::patch('/users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
+            Route::patch('/users/{user}/decline', [UserController::class, 'decline'])->name('users.decline');
+            Route::patch('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
+            Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        });
+
+        Route::delete('/security-alerts/account', [SecurityAlertController::class, 'clearAccount'])->name('security-alerts.clear-account');
+        Route::delete('/security-alerts/ip', [SecurityAlertController::class, 'dismissIp'])->name('security-alerts.dismiss-ip');
     });
 });
