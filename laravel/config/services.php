@@ -28,6 +28,16 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'brevo' => [
+        'key' => env('BREVO_API_KEY'),
+        'endpoint' => 'https://api.brevo.com/v3/smtp/email',
+        'from_email' => env('MAIL_FROM_EMAIL', 'gradtrack.sjnhs@gmail.com'),
+        'from_name' => env('MAIL_FROM_NAME', 'San Josef NHS Graduate Tracking'),
+        'always_log' => (bool) env('MAIL_ALWAYS_LOG', true),
+        // Shows the reset code on screen when email delivery fails (local testing only).
+        'show_code_on_failure' => (bool) env('MAIL_SHOW_RESET_LINK_ON_FAILURE', false),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
