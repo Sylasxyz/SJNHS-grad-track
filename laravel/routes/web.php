@@ -9,7 +9,10 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Instructor\StudentAccountController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ProfilePictureController;
+use App\Http\Controllers\Student\ProfileController;
 use App\Models\Announcement;
+use App\Models\GraduateProfile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -59,8 +62,15 @@ Route::middleware(['auth', 'active'])->group(function () {
     });
 
     // Role-only areas; each converted feature adds its routes to the matching group.
+    Route::get('/profiles/{profile}/picture', ProfilePictureController::class)
+        ->whereNumber('profile')->can('view', 'profile')->name('profiles.picture');
+
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        //
+        Route::middleware('can:manageOwn,'.GraduateProfile::class)->group(function () {
+            Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+            Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::delete('/profile/picture', [ProfileController::class, 'destroyPicture'])->name('profile.picture.destroy');
+        });
     });
 
     Route::middleware('role:instructor')->prefix('instructor')->name('instructor.')->group(function () {
