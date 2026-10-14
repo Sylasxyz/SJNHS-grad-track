@@ -118,8 +118,12 @@ Route::middleware(['auth', 'active'])->group(function () {
         //
     });
 
+    // Old instructor/dashboard.php only redirected to the shared dashboard.
+    Route::get('/instructor/dashboard', fn () => redirect()->route('dashboard'))->name('instructor.dashboard');
+
     // Manage Student Accounts: like the legacy instructor/users.php, Admins may use it too.
     Route::middleware('role:instructor,admin')->prefix('instructor')->name('instructor.')->group(function () {
+        Route::get('/', fn () => redirect()->route('dashboard'))->name('index');
         Route::get('/users', [StudentAccountController::class, 'index'])->name('users');
         Route::patch('/users/{student}/approve', [StudentAccountController::class, 'approve'])
             ->whereNumber('student')->can('manageStudent', 'student')->name('users.approve');
