@@ -12,7 +12,7 @@
         $links[] = ['student.profile', 'profile', 'bi-person-badge', 'My Graduate Profile'];
     }
     if ($isStaff) {
-        $links[] = ['graduates', 'graduates', 'bi-search', 'Graduate Records'];
+        $links[] = ['graduates', 'graduates', 'bi-search', 'Graduate Records', 'graduates*'];
         $links[] = ['announcements.create', 'announcement_create', 'bi-pencil-square', 'Post Announcement'];
     }
     if ($role === 'Instructor') {

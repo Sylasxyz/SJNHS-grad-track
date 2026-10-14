@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\Instructor\StudentAccountController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfilePictureController;
@@ -62,6 +63,21 @@ Route::middleware(['auth', 'active'])->group(function () {
     });
 
     // Role-only areas; each converted feature adds its routes to the matching group.
+    Route::middleware('can:viewAny,'.GraduateProfile::class)->group(function () {
+        Route::get('/graduates', [GraduateController::class, 'index'])->name('graduates');
+        Route::get('/graduates/export', [GraduateController::class, 'export'])->name('graduates.export');
+        Route::patch('/graduates/verify', [GraduateController::class, 'verifyBulk'])
+            ->can('verify', GraduateProfile::class)->name('graduates.verify');
+        Route::whereNumber('profile')->group(function () {
+            Route::get('/graduates/{profile}/edit', [GraduateController::class, 'edit'])
+                ->can('update', 'profile')->name('graduates.edit');
+            Route::put('/graduates/{profile}', [GraduateController::class, 'update'])
+                ->can('update', 'profile')->name('graduates.update');
+            Route::delete('/graduates/{profile}', [GraduateController::class, 'destroy'])
+                ->can('delete', 'profile')->name('graduates.destroy');
+        });
+    });
+
     Route::get('/profiles/{profile}/picture', ProfilePictureController::class)
         ->whereNumber('profile')->can('view', 'profile')->name('profiles.picture');
 
