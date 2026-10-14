@@ -11,9 +11,11 @@ use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\Instructor\StudentAccountController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfilePictureController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Student\ProfileController;
 use App\Models\Announcement;
 use App\Models\GraduateProfile;
+use App\Models\Report;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -75,6 +77,22 @@ Route::middleware(['auth', 'active'])->group(function () {
                 ->can('update', 'profile')->name('graduates.update');
             Route::delete('/graduates/{profile}', [GraduateController::class, 'destroy'])
                 ->can('delete', 'profile')->name('graduates.destroy');
+        });
+    });
+
+    Route::middleware('can:viewAny,'.Report::class)->group(function () {
+        $reportNotFound = fn () => redirect()->route('reports')->with('error', 'Report not found.');
+
+        Route::get('/admin/reports', [ReportController::class, 'index'])->name('reports');
+        Route::post('/admin/reports', [ReportController::class, 'store'])
+            ->can('create', Report::class)->name('reports.store');
+        Route::whereNumber('report')->group(function () use ($reportNotFound) {
+            Route::get('/admin/reports/{report}', [ReportController::class, 'show'])
+                ->can('view', 'report')->missing($reportNotFound)->name('reports.show');
+            Route::get('/admin/reports/{report}/export', [ReportController::class, 'export'])
+                ->can('view', 'report')->missing($reportNotFound)->name('reports.export');
+            Route::delete('/admin/reports/{report}', [ReportController::class, 'destroy'])
+                ->can('delete', 'report')->missing($reportNotFound)->name('reports.destroy');
         });
     });
 

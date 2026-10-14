@@ -22,7 +22,7 @@
         $links[] = ['admin.users', 'admin/users', 'bi-people', 'Manage Users'];
     }
     if ($isStaff) {
-        $links[] = ['reports', 'admin/reports', 'bi-file-earmark-bar-graph', 'Reports'];
+        $links[] = ['reports', 'admin/reports', 'bi-file-earmark-bar-graph', 'Reports', 'reports*'];
         $links[] = ['analytics', 'analytics', 'bi-graph-up-arrow', 'Analytics'];
     }
 @endphp
