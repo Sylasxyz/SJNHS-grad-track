@@ -114,6 +114,30 @@ class GraduateAnalytics
     }
 
     /**
+     * Most recently updated unverified profiles of active accounts ("Awaiting verification").
+     *
+     * @return list<\stdClass> rows with Profile_ID, Full_Name, Course, Batch_Year, Employment_Status, Last_Updated, Username
+     */
+    public function awaitingVerification(int $batchFrom = 0, int $batchTo = 0, int $limit = 8): array
+    {
+        $sql = "SELECT gp.Profile_ID, gp.Full_Name, gp.Course, gp.Batch_Year, gp.Employment_Status, gp.Last_Updated, ua.Username
+                FROM Graduate_Profiles gp
+                INNER JOIN User_Accounts ua ON ua.User_ID = gp.User_ID
+                WHERE gp.Is_Verified = 0 AND ua.Status = 'Active'";
+        $params = [];
+        if ($batchFrom > 0) {
+            $sql .= ' AND gp.Batch_Year >= ?';
+            $params[] = $batchFrom;
+        }
+        if ($batchTo > 0) {
+            $sql .= ' AND gp.Batch_Year <= ?';
+            $params[] = $batchTo;
+        }
+
+        return DB::select($sql.' ORDER BY gp.Last_Updated DESC LIMIT '.max(1, $limit), $params);
+    }
+
+    /**
      * Compute graduate-tracking analytics for dashboard decision-making.
      *
      * @param  string  $employmentFilter  ''|all = all statuses; 'All Employed' = Employed+Self-Employed; or a single status

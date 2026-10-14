@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\SecurityAlertController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -94,6 +95,12 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::delete('/admin/reports/{report}', [ReportController::class, 'destroy'])
                 ->can('delete', 'report')->missing($reportNotFound)->name('reports.destroy');
         });
+    });
+
+    Route::middleware('can:viewAnalytics')->group(function () {
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+        Route::post('/analytics/snapshot', [AnalyticsController::class, 'storeSnapshot'])
+            ->can('create', Report::class)->name('analytics.snapshot');
     });
 
     Route::get('/profiles/{profile}/picture', ProfilePictureController::class)
