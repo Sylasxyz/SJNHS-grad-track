@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DFD Level 1 (Detailed) — Graduate Tracking System</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: "Segoe UI", Tahoma, sans-serif; background: #e8e8e8; color: #111; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    section {
+      background: #fff; border: 1px solid #999; padding: 22px 18px 28px; margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+    h1 { font-size: 1.05rem; text-align: center; margin: 0 0 6px; }
+    h2 { font-size: 0.92rem; margin: 0 0 12px; text-align: center; color: #222; }
+    .sub { font-size: 0.76rem; text-align: center; color: #444; margin: 0 0 14px; line-height: 1.45; }
+    svg { display: block; width: 100%; height: auto; }
+    .box { fill: #fff; stroke: #111; stroke-width: 1.15; }
+    .boundary { fill: none; stroke: #111; stroke-width: 1.4; stroke-dasharray: 7 4; }
+    .store { fill: #fafafa; stroke: #111; stroke-width: 1.15; }
+    .proc { font-size: 8.5px; font-weight: 600; text-anchor: middle; fill: #111; }
+    .ent { font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+    .fl { font-size: 7.5px; fill: #111; font-family: "Segoe UI", Tahoma, sans-serif; }
+    line { stroke: #111; stroke-width: 0.85; }
+    .toc { font-size: 0.82rem; max-width: 520px; margin: 0 auto 20px; background: #fff; border: 1px solid #999; padding: 14px 18px; }
+    .toc ol { margin: 0; padding-left: 1.2rem; }
+    @media print {
+      body { background: #fff; padding: 0; }
+      section { border: none; margin-bottom: 12px; }
+      .toc { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Level 1 Data Flow Diagram (Detailed)<br>Web-Based Graduate Tracking System — SJNHS</h1>
+    <div class="toc">
+      <strong>Print all sections for full DFD Level 1:</strong>
+      <ol>
+        <li>Structure — processes 1.0–8.0 and data stores D1–D5</li>
+        <li>Student — external flows</li>
+        <li>Instructor — external flows</li>
+        <li>Admin — external flows</li>
+        <li>Process ↔ data store (detailed)</li>
+      </ol>
+      <p style="margin:10px 0 0;font-size:0.75rem;">Ctrl+P → Save as PDF. Use draw.io DFD shapes to redraw for final submission if required.</p>
+    </div>
+
+    <!-- ========== SECTION 1: STRUCTURE ========== -->
+    <section>
+      <h2>Figure X-1. Level 1 — System decomposition and data stores</h2>
+      <p class="sub">Dashed border = process 0 exploded. Arrows show process ↔ data store links.</p>
+      <svg viewBox="0 0 960 480" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0 0,6 3,0 6" fill="#111"/></marker>
+        </defs>
+        <rect class="boundary" x="140" y="45" width="680" height="250"/>
+        <text class="fl" x="150" y="62" font-weight="bold">0 Graduate Tracking System</text>
+
+        <rect class="box" x="160" y="75" width="118" height="48"/><text class="proc" x="219" y="94"><tspan x="219">1.0 Register &amp;</tspan><tspan x="219" dy="10">Validate Account</tspan></text>
+        <rect class="box" x="295" y="75" width="118" height="48"/><text class="proc" x="354" y="94"><tspan x="354">2.0 Manage</tspan><tspan x="354" dy="10">Graduate Profile</tspan></text>
+        <rect class="box" x="430" y="75" width="118" height="48"/><text class="proc" x="489" y="94"><tspan x="489">3.0 Manage</tspan><tspan x="489" dy="10">Communication</tspan></text>
+        <rect class="box" x="565" y="75" width="118" height="48"/><text class="proc" x="624" y="94"><tspan x="624">4.0 Manage</tspan><tspan x="624" dy="10">Learner Accounts</tspan></text>
+        <rect class="box" x="160" y="145" width="118" height="48"/><text class="proc" x="219" y="164"><tspan x="219">5.0 Administer</tspan><tspan x="219" dy="10">User Accounts</tspan></text>
+        <rect class="box" x="295" y="145" width="118" height="48"/><text class="proc" x="354" y="164"><tspan x="354">6.0 Manage</tspan><tspan x="354" dy="10">Graduate Records</tspan></text>
+        <rect class="box" x="430" y="145" width="118" height="48"/><text class="proc" x="489" y="164"><tspan x="489">7.0 Role-Based</tspan><tspan x="489" dy="10">Dashboard</tspan></text>
+        <rect class="box" x="565" y="145" width="118" height="48"/><text class="proc" x="624" y="164"><tspan x="624">8.0 Analytics &amp;</tspan><tspan x="624" dy="10">Reports</tspan></text>
+
+        <rect class="store" x="155" y="360" width="108" height="32"/><text class="proc" x="209" y="380">D1 User Accounts</text>
+        <rect class="store" x="280" y="360" width="108" height="32"/><text class="proc" x="334" y="380">D2 Graduate Profiles</text>
+        <rect class="store" x="405" y="360" width="108" height="32"/><text class="proc" x="459" y="380">D3 Announcements</text>
+        <rect class="store" x="530" y="360" width="108" height="32"/><text class="proc" x="584" y="380">D4 Messages</text>
+        <rect class="store" x="655" y="360" width="108" height="32"/><text class="proc" x="709" y="380">D5 Saved Reports</text>
+
+        <!-- 1.0, 4.0, 5.0 -> D1 -->
+        <line x1="219" y1="123" x2="209" y2="360" marker-end="url(#a1)"/><text class="fl" x="195" y="250">write</text>
+        <line x1="624" y1="123" x2="240" y2="360" marker-end="url(#a1)"/>
+        <line x1="219" y1="193" x2="215" y2="360" marker-end="url(#a1)"/>
+        <!-- 2.0, 6.0 -> D2 -->
+        <line x1="354" y1="123" x2="334" y2="360" marker-end="url(#a1)"/>
+        <line x1="354" y1="193" x2="340" y2="360" marker-end="url(#a1)"/>
+        <!-- 3.0 -> D3 D4 -->
+        <line x1="489" y1="123" x2="459" y2="360" marker-end="url(#a1)"/>
+        <line x1="500" y1="123" x2="584" y2="360" marker-end="url(#a1)"/>
+        <!-- 7.0 reads D1-D5 -->
+        <line x1="489" y1="193" x2="209" y2="360" marker-end="url(#a1)"/><text class="fl" x="400" y="320">read summary</text>
+        <line x1="489" y1="193" x2="709" y2="360" marker-end="url(#a1)"/>
+        <!-- 8.0 -> D2 D5 -->
+        <line x1="624" y1="193" x2="334" y2="360" marker-end="url(#a1)"/>
+        <line x1="624" y1="193" x2="709" y2="360" marker-end="url(#a1)"/>
+        <!-- 2.0 read D1 -->
+        <line x1="354" y1="123" x2="220" y2="360" marker-end="url(#a1)"/><text class="fl" x="280" y="240">user link</text>
+        <!-- 6.0 read D1 -->
+        <line x1="354" y1="193" x2="230" y2="360" marker-end="url(#a1)"/>
+
+        <!-- Internal -->
+        <line x1="278" y1="99" x2="295" y2="99" marker-end="url(#a1)"/><text class="fl" x="280" y="92">account ID</text>
+        <line x1="624" y1="123" x2="354" y2="145" marker-end="url(#a1)"/><text class="fl" x="480" y="138">approved student</text>
+      </svg>
+    </section>
+
+    <!-- ========== SECTION 2: STUDENT ========== -->
+    <section>
+      <h2>Figure X-2. Level 1 — Student external flows</h2>
+      <svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="a2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0 0,6 3,0 6" fill="#111"/></marker></defs>
+        <rect class="box" x="40" y="180" width="100" height="40"/><text class="ent" x="90" y="200">Student</text>
+        <rect class="box" x="280" y="40" width="130" height="44"/><text class="proc" x="345" y="58"><tspan x="345">1.0 Register &amp;</tspan><tspan x="345" dy="11">Validate Account</tspan></text>
+        <rect class="box" x="280" y="110" width="130" height="44"/><text class="proc" x="345" y="128"><tspan x="345">2.0 Manage</tspan><tspan x="345" dy="11">Graduate Profile</tspan></text>
+        <rect class="box" x="280" y="180" width="130" height="44"/><text class="proc" x="345" y="198"><tspan x="345">3.0 Manage</tspan><tspan x="345" dy="11">Communication</tspan></text>
+
+        <line x1="140" y1="195" x2="280" y2="62" marker-end="url(#a2)"/><text class="fl" x="145" y="115">Register Account Data</text>
+        <line x1="140" y1="200" x2="280" y2="75" marker-end="url(#a2)"/><text class="fl" x="145" y="130">Validate Registration Data</text>
+        <line x1="280" y1="55" x2="140" y2="188" marker-end="url(#a2)"/><text class="fl" x="145" y="100">Registration Validation Result</text>
+
+        <line x1="140" y1="200" x2="280" y2="132" marker-end="url(#a2)"/><text class="fl" x="145" y="155">Manage Own Graduate Profile</text>
+        <line x1="140" y1="205" x2="280" y2="140" marker-end="url(#a2)"/><text class="fl" x="145" y="168">Upload Remove Profile Picture</text>
+        <line x1="140" y1="210" x2="280" y2="148" marker-end="url(#a2)"/><text class="fl" x="145" y="181">Employment and Contact Info</text>
+        <line x1="280" y1="120" x2="140" y2="212" marker-end="url(#a2)"/><text class="fl" x="145" y="145">Profile Verification Status</text>
+
+        <line x1="140" y1="205" x2="280" y2="202" marker-end="url(#a2)"/><text class="fl" x="145" y="218">Send Receive Messages</text>
+        <line x1="280" y1="195" x2="140" y2="198" marker-end="url(#a2)"/><text class="fl" x="145" y="235">View Announcement</text>
+        <line x1="280" y1="210" x2="140" y2="208" marker-end="url(#a2)"/><text class="fl" x="145" y="252">Send Receive Messages</text>
+      </svg>
+    </section>
+
+    <!-- ========== SECTION 3: INSTRUCTOR ========== -->
+    <section>
+      <h2>Figure X-3. Level 1 — Instructor external flows</h2>
+      <svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="a3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0 0,6 3,0 6" fill="#111"/></marker></defs>
+        <rect class="box" x="820" y="240" width="100" height="40"/><text class="ent" x="870" y="260">Instructor</text>
+
+        <rect class="box" x="380" y="30" width="125" height="40"/><text class="proc" x="442" y="48"><tspan x="442">4.0 Manage Learner</tspan><tspan x="442" dy="10">Accounts</tspan></text>
+        <rect class="box" x="380" y="90" width="125" height="40"/><text class="proc" x="442" y="108"><tspan x="442">6.0 Manage Graduate</tspan><tspan x="442" dy="10">Records</tspan></text>
+        <rect class="box" x="380" y="150" width="125" height="40"/><text class="proc" x="442" y="168"><tspan x="442">7.0 Role-Based</tspan><tspan x="442" dy="10">Dashboard</tspan></text>
+        <rect class="box" x="380" y="210" width="125" height="40"/><text class="proc" x="442" y="228"><tspan x="442">3.0 Manage</tspan><tspan x="442" dy="10">Communication</tspan></text>
+
+        <!-- to 4.0 -->
+        <line x1="820" y1="255" x2="505" y2="50" marker-end="url(#a3)"/><text class="fl" x="620" y="140">Approve Pending Student Account</text>
+        <line x1="820" y1="260" x2="505" y2="58" marker-end="url(#a3)"/><text class="fl" x="620" y="155">Manage Students Account</text>
+        <line x1="505" y1="45" x2="820" y2="248" marker-end="url(#a3)"/><text class="fl" x="620" y="125">Pending Student List</text>
+        <!-- to 6.0 -->
+        <line x1="820" y1="255" x2="505" y2="110" marker-end="url(#a3)"/><text class="fl" x="620" y="175">Search Filter Graduates</text>
+        <line x1="820" y1="260" x2="505" y2="118" marker-end="url(#a3)"/><text class="fl" x="620" y="190">Verify Graduate Profiles</text>
+        <line x1="820" y1="265" x2="505" y2="126" marker-end="url(#a3)"/><text class="fl" x="620" y="205">Edit Graduate Record</text>
+        <line x1="820" y1="270" x2="505" y2="134" marker-end="url(#a3)"/><text class="fl" x="620" y="220">Export Graduate CSV</text>
+        <line x1="505" y1="105" x2="820" y2="252" marker-end="url(#a3)"/><text class="fl" x="620" y="165">Graduate Records</text>
+        <line x1="505" y1="120" x2="820" y2="268" marker-end="url(#a3)"/><text class="fl" x="620" y="235">Export Graduate CSV</text>
+        <!-- to 7.0 -->
+        <line x1="820" y1="255" x2="505" y2="170" marker-end="url(#a3)"/><text class="fl" x="620" y="255">View Role-Based Dashboard</text>
+        <line x1="505" y1="165" x2="820" y2="250" marker-end="url(#a3)"/><text class="fl" x="620" y="245">View Role-Based Dashboard</text>
+        <!-- to 3.0 -->
+        <line x1="820" y1="255" x2="505" y2="230" marker-end="url(#a3)"/><text class="fl" x="550" y="275">View Archived Announcement</text>
+        <line x1="820" y1="260" x2="505" y2="238" marker-end="url(#a3)"/><text class="fl" x="550" y="290">Post Announcement</text>
+        <line x1="820" y1="265" x2="505" y2="246" marker-end="url(#a3)"/><text class="fl" x="550" y="305">Attach Image to Announcement</text>
+        <line x1="820" y1="270" x2="505" y2="254" marker-end="url(#a3)"/><text class="fl" x="550" y="320">Archive Restore Announcement</text>
+        <line x1="820" y1="275" x2="505" y2="262" marker-end="url(#a3)"/><text class="fl" x="550" y="335">Send Receive Messages</text>
+        <line x1="505" y1="218" x2="820" y2="242" marker-end="url(#a3)"/><text class="fl" x="550" y="260">View Announcement</text>
+        <line x1="505" y1="232" x2="820" y2="262" marker-end="url(#a3)"/><text class="fl" x="550" y="310">View Archived Announcement</text>
+        <line x1="505" y1="246" x2="820" y2="272" marker-end="url(#a3)"/><text class="fl" x="550" y="350">Send Receive Messages</text>
+      </svg>
+    </section>
+
+    <!-- ========== SECTION 4: ADMIN ========== -->
+    <section>
+      <h2>Figure X-4. Level 1 — Admin external flows</h2>
+      <svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="a4" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0 0,6 3,0 6" fill="#111"/></marker></defs>
+        <rect class="box" x="820" y="480" width="100" height="40"/><text class="ent" x="870" y="500">Admin</text>
+
+        <rect class="box" x="320" y="40" width="130" height="42"/><text class="proc" x="385" y="58"><tspan x="385">5.0 Administer User</tspan><tspan x="385" dy="11">Accounts</tspan></text>
+        <rect class="box" x="320" y="100" width="130" height="42"/><text class="proc" x="385" y="118"><tspan x="385">6.0 Manage Graduate</tspan><tspan x="385" dy="11">Records</tspan></text>
+        <rect class="box" x="320" y="160" width="130" height="42"/><text class="proc" x="385" y="178"><tspan x="385">3.0 Manage</tspan><tspan x="385" dy="11">Communication</tspan></text>
+        <rect class="box" x="320" y="220" width="130" height="42"/><text class="proc" x="385" y="238"><tspan x="385">7.0 Role-Based</tspan><tspan x="385" dy="11">Dashboard</tspan></text>
+        <rect class="box" x="320" y="280" width="130" height="42"/><text class="proc" x="385" y="298"><tspan x="385">8.0 Analytics &amp;</tspan><tspan x="385" dy="11">Report Generation</tspan></text>
+
+        <line x1="820" y1="495" x2="450" y2="61" marker-end="url(#a4)"/><text class="fl" x="600" y="280">Approve Reject Registration</text>
+        <line x1="820" y1="500" x2="450" y2="68" marker-end="url(#a4)"/><text class="fl" x="600" y="295">Create User Account</text>
+        <line x1="820" y1="505" x2="450" y2="75" marker-end="url(#a4)"/><text class="fl" x="600" y="310">Deactivate User Accounts</text>
+        <line x1="820" y1="510" x2="450" y2="82" marker-end="url(#a4)"/><text class="fl" x="600" y="325">Edit User and Role</text>
+        <line x1="450" y1="55" x2="820" y2="488" marker-end="url(#a4)"/><text class="fl" x="600" y="265">User Account Data</text>
+
+        <line x1="820" y1="495" x2="450" y2="121" marker-end="url(#a4)"/><text class="fl" x="600" y="340">Delete Graduate Records</text>
+        <line x1="450" y1="115" x2="820" y2="492" marker-end="url(#a4)"/><text class="fl" x="600" y="355">Delete Graduate Records Result</text>
+
+        <line x1="820" y1="500" x2="450" y2="181" marker-end="url(#a4)"/><text class="fl" x="600" y="380">Permanently Delete Announcement</text>
+
+        <line x1="820" y1="505" x2="450" y2="241" marker-end="url(#a4)"/><text class="fl" x="600" y="400">View Role-Based Dashboard</text>
+        <line x1="450" y1="235" x2="820" y2="498" marker-end="url(#a4)"/><text class="fl" x="600" y="415">View Role-Based Dashboard</text>
+
+        <line x1="820" y1="495" x2="450" y2="295" marker-end="url(#a4)"/><text class="fl" x="560" y="430">View Analytics</text>
+        <line x1="820" y1="500" x2="450" y2="302" marker-end="url(#a4)"/><text class="fl" x="560" y="445">Save Analytics</text>
+        <line x1="820" y1="505" x2="450" y2="309" marker-end="url(#a4)"/><text class="fl" x="560" y="460">Generate Employment Report</text>
+        <line x1="820" y1="510" x2="450" y2="316" marker-end="url(#a4)"/><text class="fl" x="560" y="475">Compute Employment Statistics</text>
+        <line x1="820" y1="515" x2="450" y2="323" marker-end="url(#a4)"/><text class="fl" x="560" y="490">View Saved Report</text>
+        <line x1="820" y1="520" x2="450" y2="330" marker-end="url(#a4)"/><text class="fl" x="560" y="505">Delete Saved Report</text>
+        <line x1="820" y1="525" x2="450" y2="337" marker-end="url(#a4)"/><text class="fl" x="560" y="520">Export Saved Report CSV</text>
+
+        <line x1="450" y1="288" x2="820" y2="490" marker-end="url(#a4)"/><text class="fl" x="560" y="440">View Analytics</text>
+        <line x1="450" y1="300" x2="820" y2="495" marker-end="url(#a4)"/><text class="fl" x="560" y="455">Generate Employment Report</text>
+        <line x1="450" y1="312" x2="820" y2="500" marker-end="url(#a4)"/><text class="fl" x="560" y="470">Compute Employment Statistics</text>
+        <line x1="450" y1="324" x2="820" y2="505" marker-end="url(#a4)"/><text class="fl" x="560" y="485">View Saved Report</text>
+        <line x1="450" y1="336" x2="820" y2="510" marker-end="url(#a4)"/><text class="fl" x="560" y="500">Export Saved Report CSV</text>
+      </svg>
+    </section>
+
+    <!-- ========== SECTION 5: DATA STORE TABLE ========== -->
+    <section>
+      <h2>Figure X-5. Level 1 — Process ↔ data store (detailed list)</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+        <thead>
+          <tr style="background:#f0f0f0;">
+            <th style="border:1px solid #999;padding:6px;text-align:left;">Process</th>
+            <th style="border:1px solid #999;padding:6px;text-align:left;">Flow</th>
+            <th style="border:1px solid #999;padding:6px;text-align:left;">Data store</th>
+            <th style="border:1px solid #999;padding:6px;text-align:left;">MySQL table</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="border:1px solid #ccc;padding:5px;">1.0</td><td style="border:1px solid #ccc;padding:5px;">Write new / pending user</td><td style="border:1px solid #ccc;padding:5px;">D1</td><td style="border:1px solid #ccc;padding:5px;">User_Accounts</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">2.0</td><td style="border:1px solid #ccc;padding:5px;">Read/write profile</td><td style="border:1px solid #ccc;padding:5px;">D2</td><td style="border:1px solid #ccc;padding:5px;">Graduate_Profiles</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">2.0</td><td style="border:1px solid #ccc;padding:5px;">Read student user link</td><td style="border:1px solid #ccc;padding:5px;">D1</td><td style="border:1px solid #ccc;padding:5px;">User_Accounts</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">3.0</td><td style="border:1px solid #ccc;padding:5px;">Read/write announcements</td><td style="border:1px solid #ccc;padding:5px;">D3</td><td style="border:1px solid #ccc;padding:5px;">Announcements</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">3.0</td><td style="border:1px solid #ccc;padding:5px;">Read/write messages</td><td style="border:1px solid #ccc;padding:5px;">D4</td><td style="border:1px solid #ccc;padding:5px;">User_Messages</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">4.0</td><td style="border:1px solid #ccc;padding:5px;">Update student status</td><td style="border:1px solid #ccc;padding:5px;">D1</td><td style="border:1px solid #ccc;padding:5px;">User_Accounts</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">5.0</td><td style="border:1px solid #ccc;padding:5px;">CRUD users / roles</td><td style="border:1px solid #ccc;padding:5px;">D1</td><td style="border:1px solid #ccc;padding:5px;">User_Accounts</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">6.0</td><td style="border:1px solid #ccc;padding:5px;">Search, verify, edit, delete</td><td style="border:1px solid #ccc;padding:5px;">D2</td><td style="border:1px solid #ccc;padding:5px;">Graduate_Profiles</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">6.0</td><td style="border:1px solid #ccc;padding:5px;">Lookup account</td><td style="border:1px solid #ccc;padding:5px;">D1</td><td style="border:1px solid #ccc;padding:5px;">User_Accounts</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">7.0</td><td style="border:1px solid #ccc;padding:5px;">Read aggregates</td><td style="border:1px solid #ccc;padding:5px;">D1, D2, D3, D5</td><td style="border:1px solid #ccc;padding:5px;">Multiple</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">8.0</td><td style="border:1px solid #ccc;padding:5px;">Read employment data</td><td style="border:1px solid #ccc;padding:5px;">D2</td><td style="border:1px solid #ccc;padding:5px;">Graduate_Profiles</td></tr>
+          <tr><td style="border:1px solid #ccc;padding:5px;">8.0</td><td style="border:1px solid #ccc;padding:5px;">Save / read / delete reports</td><td style="border:1px solid #ccc;padding:5px;">D5</td><td style="border:1px solid #ccc;padding:5px;">Reports</td></tr>
+        </tbody>
+      </table>
+      <p class="sub" style="margin-top:14px;">App also uses Password_Resets and Login_Attempts (optional on DFD as support stores).</p>
+    </section>
+  </div>
+</body>
+</html>
