@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\MailTestController;
 use App\Http\Controllers\Admin\SecurityAlertController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AnalyticsController;
@@ -19,7 +20,10 @@ use App\Models\GraduateProfile;
 use App\Models\Report;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('login'));
+Route::view('/', 'public.home')->name('home');
+Route::view('/about', 'public.about')->name('about');
+Route::view('/privacy', 'public.privacy')->name('privacy');
+Route::view('/terms', 'public.terms')->name('terms');
 
 Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.attempt');
@@ -35,6 +39,9 @@ Route::post('/forgot-password', [PasswordResetController::class, 'handleForgot']
     ->name('password.email');
 Route::get('/reset-password', [PasswordResetController::class, 'showReset'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'updatePassword'])->name('password.update');
+
+// Old instructor_preview.php only redirected (without a login check) to instructor/dashboard.
+Route::get('/instructor_preview', fn () => redirect()->route('instructor.dashboard'));
 
 Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
@@ -146,5 +153,8 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         Route::delete('/security-alerts/account', [SecurityAlertController::class, 'clearAccount'])->name('security-alerts.clear-account');
         Route::delete('/security-alerts/ip', [SecurityAlertController::class, 'dismissIp'])->name('security-alerts.dismiss-ip');
+
+        Route::get('/mail_test', [MailTestController::class, 'show'])->name('mail-test');
+        Route::post('/mail_test', [MailTestController::class, 'send'])->name('mail-test.send');
     });
 });

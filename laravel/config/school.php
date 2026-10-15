@@ -5,12 +5,23 @@ return [
     'name' => 'San Josef National High School',
     'logo' => 'assets/school-logo.png',
 
-    // Base URL of the legacy vanilla PHP app, used for pages not yet converted.
-    'legacy_url' => rtrim(env('LEGACY_APP_URL', 'http://localhost/Capstoneafter/Capstoneafter'), '/'),
+    // Public pages (homepage, about, footer), same values as includes/app_config.php.
+    // Image settings accept a path under public/ or a full URL.
+    'hero_image' => 'assets/landing/students-hero.png',
+    'about_image' => 'assets/school-about-annex.png',
+    'location_label' => 'Cabanatuan City',
+    'tagline' => 'Committed to Quality Education for a Brighter Tomorrow.',
+    'address' => 'Brgy. San Josef, Cabanatuan City',
+    'email' => 'info@sjnhs.edu.ph',
+    'phone' => '(044) 803-0048',
+    'social' => [
+        'facebook' => '#',
+        'instagram' => '#',
+    ],
 
-    // Folder that contains uploads/ (the legacy app root). Image_Path values such as
-    // "uploads/announcements/a3_1700000000.jpg" are relative to it, shared by both apps.
-    'uploads_root' => rtrim(env('LEGACY_UPLOADS_ROOT', dirname(base_path())), '/\\'),
+    // Folder that contains uploads/ (the project root, one level above laravel/; a volume on Railway).
+    // Image_Path / Profile_Picture values such as "uploads/announcements/a3_1700000000.jpg" are relative to it.
+    'uploads_root' => rtrim(env('UPLOADS_ROOT', dirname(base_path())), '/\\'),
 
     'login' => [
         'failure_window_minutes' => 30,

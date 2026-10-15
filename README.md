@@ -1,28 +1,47 @@
 # San Josef National High School Graduate Tracking System
 
-## Setup (XAMPP)
+A Laravel 12 app (in `laravel/`) on top of the existing `graduate_tracking` MySQL database. The schema is managed with the SQL files in `database/`; there are no Laravel migrations.
 
-- Import the database schema: `database/schema.sql`
-- Run additional migrations in phpMyAdmin when needed:
-  - `database/migrate_add_user_ids.sql` (Student No / Employee ID fields for role-based registration)
-  - `database/migrate_add_middle_initial.sql` (adds Middle Initial column)
-  - `database/migrate_add_user_messages.sql` (Student/Instructor messaging)
-- DB: defaults in `includes/db_config.php` (XAMPP). Optional: env vars — see `.env.example`.
-- Mail (local): copy `includes/mail_config.local.example.php` → `mail_config.local.php` and set Gmail App Password.
-- **Railway:** see [DEPLOY-RAILWAY.md](DEPLOY-RAILWAY.md).
-- Visit your local URL (e.g. `http://localhost/Capstoneafter/Capstoneafter/`).
+## Local setup (XAMPP)
+
+1. Start **MySQL** in XAMPP and import `database/schema.sql`, then the `database/migrate_*.sql` files as needed (phpMyAdmin or `mysql.exe`).
+2. Install dependencies and configure the app:
+
+   ```powershell
+   cd laravel
+   C:\xampp\php\php.exe C:\xampp\php\composer.phar install
+   copy .env.example .env
+   C:\xampp\php\php.exe artisan key:generate
+   ```
+
+   `.env.example` already points at XAMPP's MySQL (`graduate_tracking`, user `root`, no password).
+3. Run it:
+
+   ```powershell
+   C:\xampp\php\php.exe artisan serve --port=8011
+   ```
+
+   Open `http://127.0.0.1:8011`.
+
+Email goes through the Brevo HTTPS API. Leave `BREVO_API_KEY` empty locally (sends fail and are logged to `laravel/storage/logs/mail.log`), or set an API key (`xkeysib-…`) to send for real.
+
+Uploaded announcement images and profile photos live in `uploads/` next to `laravel/`.
+
+**Railway:** see [DEPLOY-RAILWAY.md](DEPLOY-RAILWAY.md).
 
 ## Pages
 
-- `register.php`: Student registration
-- `login.php` / `logout.php`: Authentication
-- `forgot_password.php` / `reset_password.php`: Password reset flow
-- `dashboard.php`: Role-based dashboard
-- `profile.php`: Student graduate profile update form
-- `announcements.php`: View announcements (all logged-in roles)
-- `announcement_create.php`: Post announcement (Instructor/Admin)
-- `graduates.php`: Search/filter graduates (Instructor/Admin)
-- `admin/users.php`: User management (Admin)
-- `admin/reports.php`: Employment statistics + chart (Admin)
-- `messages.php`: Direct messages between Students and Instructors
-
+| URL | Who | What |
+|-----|-----|------|
+| `/`, `/about`, `/privacy`, `/terms` | Everyone | Public homepage, about page, privacy policy, terms |
+| `/login`, `/register`, `/forgot-password`, `/reset-password` | Guests | Sign in, student/instructor registration, 6-digit email code password reset |
+| `/dashboard` | Signed in | Role dashboard (student or staff view) |
+| `/announcements` | Signed in | Announcements; staff can post (`/announcements/create`), archive, restore, delete |
+| `/messages` | Signed in | Messages between students and staff |
+| `/student/profile` | Student | Graduate profile and photo |
+| `/graduates` | Instructor, Admin | Search, filter, export, verify and edit graduate records |
+| `/instructor/users` | Instructor, Admin | Approve and manage student accounts |
+| `/admin/users` | Admin | Manage all users and security alerts |
+| `/admin/reports` | Instructor, Admin | Generate, view, export (CSV) and delete saved reports |
+| `/analytics` | Instructor, Admin | KPIs and charts, save snapshots |
+| `/admin/mail_test` | Admin | Email connection check and test send |

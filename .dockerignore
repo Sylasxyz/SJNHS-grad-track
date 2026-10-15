@@ -11,3 +11,17 @@ logs/*.log
 composer-setup.php
 .cursor
 **/.DS_Store
+
+# Stale nested copy and local-only folders
+Capstoneafter/
+docs/
+uploads/
+
+# Laravel build output and runtime files (rebuilt in the image)
+laravel/vendor/
+laravel/node_modules/
+laravel/storage/logs/*
+laravel/storage/framework/cache/data/*
+laravel/storage/framework/sessions/*
+laravel/storage/framework/views/*
+laravel/bootstrap/cache/*.php

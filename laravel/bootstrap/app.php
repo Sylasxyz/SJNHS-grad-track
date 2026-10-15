@@ -22,6 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('dashboard'));
+
+        // Railway terminates HTTPS at its edge proxy; trust it so URLs, redirects and cookies use https.
+        if (filled(env('RAILWAY_ENVIRONMENT')) || filled(env('RAILWAY_PROJECT_ID')) || filled(env('RAILWAY_SERVICE_NAME'))) {
+            $middleware->trustProxies(at: '*');
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->dontFlash(['new_password']);
@@ -32,8 +37,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            return redirect()->back(fallback: route('login'))
+            // Only go back to a same-host Referer (no open redirect); otherwise to register or login.
+            $referer = (string) $request->headers->get('referer', '');
+            $target = $referer !== '' && strcasecmp((string) parse_url($referer, PHP_URL_HOST), $request->getHost()) === 0
+                ? $referer
+                : route(str_contains($request->path(), 'register') ? 'register' : 'login');
+
+            return redirect()->to($target)
                 ->withInput($request->except(['password', 'confirm_password', '_token']))
-                ->with('error', 'Your session expired. Please try again.');
+                ->with('error', 'Your session expired or the page was outdated. Please refresh and try again.');
         });
     })->create();

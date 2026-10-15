@@ -3,27 +3,27 @@
     $role = (string) auth()->user()?->Role;
     $isStaff = in_array($role, ['Instructor', 'Admin'], true);
 
-    // [route name once converted, legacy page, icon, label, optional active-route pattern]
-    $links = [['dashboard', 'dashboard', 'bi-house-door-fill', 'Dashboard'],
-              ['announcements', 'announcements', 'bi-megaphone', 'Announcements'],
-              ['messages', 'messages', 'bi-chat-dots', 'Messages', 'messages*']];
+    // [route name, icon, label, optional active-route pattern]
+    $links = [['dashboard', 'bi-house-door-fill', 'Dashboard'],
+              ['announcements', 'bi-megaphone', 'Announcements'],
+              ['messages', 'bi-chat-dots', 'Messages', 'messages*']];
 
     if ($role === 'Student') {
-        $links[] = ['student.profile', 'profile', 'bi-person-badge', 'My Graduate Profile'];
+        $links[] = ['student.profile', 'bi-person-badge', 'My Graduate Profile'];
     }
     if ($isStaff) {
-        $links[] = ['graduates', 'graduates', 'bi-search', 'Graduate Records', 'graduates*'];
-        $links[] = ['announcements.create', 'announcement_create', 'bi-pencil-square', 'Post Announcement'];
+        $links[] = ['graduates', 'bi-search', 'Graduate Records', 'graduates*'];
+        $links[] = ['announcements.create', 'bi-pencil-square', 'Post Announcement'];
     }
     if ($role === 'Instructor') {
-        $links[] = ['instructor.users', 'instructor/users', 'bi-person-gear', 'Manage Students'];
+        $links[] = ['instructor.users', 'bi-person-gear', 'Manage Students'];
     }
     if ($role === 'Admin') {
-        $links[] = ['admin.users', 'admin/users', 'bi-people', 'Manage Users'];
+        $links[] = ['admin.users', 'bi-people', 'Manage Users'];
     }
     if ($isStaff) {
-        $links[] = ['reports', 'admin/reports', 'bi-file-earmark-bar-graph', 'Reports', 'reports*'];
-        $links[] = ['analytics', 'analytics', 'bi-graph-up-arrow', 'Analytics'];
+        $links[] = ['reports', 'bi-file-earmark-bar-graph', 'Reports', 'reports*'];
+        $links[] = ['analytics', 'bi-graph-up-arrow', 'Analytics'];
     }
 @endphp
 
@@ -33,8 +33,8 @@
   </button>
   <div class="dashboard-rail-icons">
     @foreach ($links as $link)
-      @php([$routeName, $legacyPath, $icon, $label] = $link)
-      <a href="{{ AppLink::to($routeName, $legacyPath) }}" class="dashboard-rail-icon {{ AppLink::isActive($link[4] ?? $routeName) ? 'is-active' : '' }}">
+      @php([$routeName, $icon, $label] = $link)
+      <a href="{{ route($routeName) }}" class="dashboard-rail-icon {{ AppLink::isActive($link[3] ?? $routeName) ? 'is-active' : '' }}">
         <i class="bi {{ $icon }}"></i><span class="dashboard-rail-label">{{ $label }}</span>
       </a>
     @endforeach

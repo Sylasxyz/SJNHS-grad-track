@@ -19,7 +19,7 @@
           @endif
         </div>
       </div>
-      <a class="btn btn-sm btn-outline-secondary" href="{{ \App\Support\AppLink::to('analytics', 'analytics') }}">View analytics</a>
+      <a class="btn btn-sm btn-outline-secondary" href="{{ route('analytics') }}">View analytics</a>
     </div>
   </div>
 

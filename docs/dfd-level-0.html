@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DFD Level 0 — Graduate Tracking System (aligned to use case)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; font-family: "Segoe UI", Tahoma, sans-serif; background: #eee; color: #111; }
+    .wrap { max-width: 1050px; margin: 0 auto; background: #fff; border: 1px solid #999; padding: 28px 20px 36px; }
+    h1 { font-size: 1rem; font-weight: 600; text-align: center; margin: 0 0 8px; line-height: 1.4; }
+    .note { font-size: 0.78rem; color: #444; text-align: center; margin: 0 0 18px; line-height: 1.45; max-width: 820px; margin-left: auto; margin-right: auto; }
+    .caption { text-align: center; font-size: 0.8rem; color: #333; margin-top: 14px; line-height: 1.5; }
+    svg { display: block; width: 100%; height: auto; }
+    .box { fill: #fff; stroke: #111; stroke-width: 1.2; }
+    .lbl { font-size: 9.5px; fill: #111; font-family: "Segoe UI", Tahoma, sans-serif; }
+    .ent { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: middle; }
+    .proc { font-size: 13px; font-weight: 600; text-anchor: middle; dominant-baseline: middle; }
+    line { stroke: #111; stroke-width: 1; }
+    @media print { body { background: #fff; padding: 0; } .wrap { border: none; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Figure X. Level 0 Data Flow Diagram<br>Web-Based Graduate Tracking System for San Josef National High School</h1>
+    <p class="note">
+      <strong>Level 0 rule:</strong> each actor has balanced flows — e.g. Student sends <strong>3</strong> data groups (one per use case module) and receives <strong>3</strong> responses.
+      Detail (Register Account, Upload Picture, etc.) appears on <strong>Level 1</strong>. Analytics: <strong>Admin only</strong>.
+    </p>
+
+    <svg viewBox="0 0 980 700" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+          <polygon points="0 0, 7 3.5, 0 7" fill="#111" />
+        </marker>
+      </defs>
+
+      <rect class="box" x="330" y="255" width="320" height="110" />
+      <text class="proc" x="490" y="303">
+        <tspan x="490" dy="0">GRADUATE TRACKING</tspan>
+        <tspan x="490" dy="16">SYSTEM</tspan>
+      </text>
+
+      <rect class="box" x="30" y="545" width="110" height="40" />
+      <text class="ent" x="85" y="565">Student</text>
+
+      <rect class="box" x="840" y="50" width="110" height="40" />
+      <text class="ent" x="895" y="70">Instructor</text>
+
+      <rect class="box" x="840" y="545" width="110" height="40" />
+      <text class="ent" x="895" y="565">Admin</text>
+
+      <!-- ===== STUDENT: 3 in / 3 out (use case modules) ===== -->
+      <line x1="140" y1="520" x2="330" y2="520" marker-end="url(#arr)" />
+      <text class="lbl" x="135" y="514" text-anchor="end">Registration Data</text>
+
+      <line x1="140" y1="480" x2="330" y2="480" marker-end="url(#arr)" />
+      <text class="lbl" x="135" y="474" text-anchor="end">Graduate Profile Data</text>
+
+      <line x1="140" y1="440" x2="330" y2="440" marker-end="url(#arr)" />
+      <text class="lbl" x="135" y="434" text-anchor="end">Communication Data</text>
+
+      <line x1="330" y1="400" x2="140" y2="400" marker-end="url(#arr)" />
+      <text class="lbl" x="135" y="394" text-anchor="end">Account Registration Result</text>
+
+      <line x1="330" y1="360" x2="140" y2="360" marker-end="url(#arr)" />
+      <text class="lbl" x="135" y="354" text-anchor="end">Graduate Profile Status</text>
+
+      <line x1="330" y1="320" x2="140" y2="320" marker-end="url(#arr)" />
+      <text class="lbl" x="135" y="314" text-anchor="end">Announcement and Message Data</text>
+
+      <!-- ===== INSTRUCTOR ===== -->
+      <line x1="840" y1="70" x2="650" y2="70" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="64" text-anchor="middle">View Announcement</text>
+
+      <line x1="840" y1="95" x2="650" y2="95" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="89" text-anchor="middle">Send Receive Messages</text>
+
+      <line x1="840" y1="120" x2="650" y2="120" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="114" text-anchor="middle">Approve Pending Student Account</text>
+
+      <line x1="840" y1="145" x2="650" y2="145" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="139" text-anchor="middle">Manage Students Account</text>
+
+      <line x1="840" y1="170" x2="650" y2="170" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="164" text-anchor="middle">Search Filter Graduates</text>
+
+      <line x1="840" y1="195" x2="650" y2="195" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="189" text-anchor="middle">Verify Graduate Profiles</text>
+
+      <line x1="840" y1="220" x2="650" y2="220" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="214" text-anchor="middle">Edit Graduate Record</text>
+
+      <line x1="840" y1="245" x2="650" y2="245" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="239" text-anchor="middle">Export Graduate CSV</text>
+
+      <line x1="840" y1="270" x2="650" y2="270" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="264" text-anchor="middle">View Role-Based Dashboard</text>
+
+      <line x1="840" y1="295" x2="650" y2="295" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="289" text-anchor="middle">View Archived Announcement</text>
+
+      <line x1="840" y1="320" x2="650" y2="320" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="314" text-anchor="middle">Post Announcement</text>
+
+      <line x1="840" y1="345" x2="650" y2="345" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="339" text-anchor="middle">Attach Image to Announcement</text>
+
+      <line x1="840" y1="370" x2="650" y2="370" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="364" text-anchor="middle">Archive Restore Announcement</text>
+
+      <line x1="650" y1="395" x2="840" y2="395" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="389" text-anchor="middle">View Announcement</text>
+
+      <line x1="650" y1="420" x2="840" y2="420" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="414" text-anchor="middle">Send Receive Messages</text>
+
+      <line x1="650" y1="445" x2="840" y2="445" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="439" text-anchor="middle">Graduate Records</text>
+
+      <line x1="650" y1="470" x2="840" y2="470" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="464" text-anchor="middle">Export Graduate CSV</text>
+
+      <line x1="650" y1="495" x2="840" y2="495" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="489" text-anchor="middle">View Role-Based Dashboard</text>
+
+      <line x1="650" y1="520" x2="840" y2="520" marker-end="url(#arr)" />
+      <text class="lbl" x="745" y="514" text-anchor="middle">View Archived Announcement</text>
+
+      <!-- ===== ADMIN ===== -->
+      <line x1="895" y1="545" x2="895" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="900" y="455">Approve Reject Registration</text>
+
+      <line x1="875" y1="545" x2="875" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="870" y="475" text-anchor="end">Create User Account</text>
+
+      <line x1="915" y1="545" x2="915" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="920" y="475">Deactivate User Accounts</text>
+
+      <line x1="855" y1="545" x2="855" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="850" y="495" text-anchor="end">Edit User and Role</text>
+
+      <line x1="935" y1="545" x2="935" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="940" y="495">Delete Graduate Records</text>
+
+      <line x1="865" y1="545" x2="865" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="860" y="515" text-anchor="end">Permanently Delete Announcement</text>
+
+      <line x1="925" y1="545" x2="925" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="930" y="515">View Analytics</text>
+
+      <line x1="885" y1="545" x2="885" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="880" y="535" text-anchor="end">Save Analytics</text>
+
+      <line x1="905" y1="545" x2="905" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="910" y="535">Generate Employment Report</text>
+
+      <line x1="945" y1="545" x2="945" y2="365" marker-end="url(#arr)" />
+      <text class="lbl" x="950" y="535">Compute Employment Statistics</text>
+
+      <line x1="470" y1="365" x2="470" y2="545" marker-end="url(#arr)" />
+      <text class="lbl" x="475" y="455">View Saved Report</text>
+
+      <line x1="500" y1="365" x2="500" y2="545" marker-end="url(#arr)" />
+      <text class="lbl" x="505" y="455">Delete Saved Report</text>
+
+      <line x1="530" y1="365" x2="530" y2="545" marker-end="url(#arr)" />
+      <text class="lbl" x="535" y="455">Export Saved Report CSV</text>
+
+      <line x1="440" y1="365" x2="440" y2="545" marker-end="url(#arr)" />
+      <text class="lbl" x="445" y="475">View Role-Based Dashboard</text>
+
+      <line x1="560" y1="365" x2="560" y2="545" marker-end="url(#arr)" />
+      <text class="lbl" x="565" y="475">User Account Data</text>
+    </svg>
+
+    <p class="caption">Open in browser → Print → Save as PDF.</p>
+    <table style="width:100%;max-width:720px;margin:16px auto 0;border-collapse:collapse;font-size:0.78rem;">
+      <caption style="caption-side:top;font-weight:600;margin-bottom:6px;">Student — what each Level 0 flow contains (Level 1 detail)</caption>
+      <tr style="background:#f0f0f0"><th style="border:1px solid #999;padding:6px">To system</th><th style="border:1px solid #999;padding:6px">From system</th></tr>
+      <tr>
+        <td style="border:1px solid #ccc;padding:6px;vertical-align:top"><strong>Registration Data</strong><br>Register Account, Validate Registration Data</td>
+        <td style="border:1px solid #ccc;padding:6px;vertical-align:top"><strong>Account Registration Result</strong><br>Validation result, account / approval status</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc;padding:6px;vertical-align:top"><strong>Graduate Profile Data</strong><br>Manage profile, upload/remove picture, employment &amp; contact</td>
+        <td style="border:1px solid #ccc;padding:6px;vertical-align:top"><strong>Graduate Profile Status</strong><br>Profile updated confirmation, verification status</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #ccc;padding:6px;vertical-align:top"><strong>Communication Data</strong><br>Send messages (request communication)</td>
+        <td style="border:1px solid #ccc;padding:6px;vertical-align:top"><strong>Announcement and Message Data</strong><br>View announcement, receive messages</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

@@ -35,7 +35,12 @@ return [
         'from_name' => env('MAIL_FROM_NAME', 'San Josef NHS Graduate Tracking'),
         'always_log' => (bool) env('MAIL_ALWAYS_LOG', true),
         // Shows the reset code on screen when email delivery fails (local testing only).
-        'show_code_on_failure' => (bool) env('MAIL_SHOW_RESET_LINK_ON_FAILURE', false),
+        // Only 1/true/yes/on enable it (as in legacy); "no", "off", etc. stay off.
+        'show_code_on_failure' => in_array(strtolower(trim((string) env('MAIL_SHOW_RESET_LINK_ON_FAILURE', ''))), ['1', 'true', 'yes', 'on'], true),
+    ],
+
+    'railway' => [
+        'detected' => filled(env('RAILWAY_ENVIRONMENT')) || filled(env('RAILWAY_PROJECT_ID')) || filled(env('RAILWAY_SERVICE_NAME')),
     ],
 
     'slack' => [

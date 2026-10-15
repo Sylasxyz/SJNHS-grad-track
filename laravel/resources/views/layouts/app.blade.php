@@ -13,7 +13,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ asset('assets/app.css') }}">
 </head>
-<body class="app-body{{ $embed ? ' auth-embed-body' : '' }}">
+<body class="@yield('body-class', 'app-body'){{ $embed ? ' auth-embed-body' : '' }}">
+  @section('body')
   @unless ($embed)
   <header class="app-topbar app-topbar-compact">
     <div class="container app-topbar-inner landing-container">
@@ -31,7 +32,7 @@
         </a>
 
         <div class="app-topbar-actions">
-          <a class="app-topbar-link" href="{{ \App\Support\AppLink::legacy() }}">Back to Homepage</a>
+          <a class="app-topbar-link" href="{{ route('home') }}">Back to Homepage</a>
           @auth
             <a class="btn btn-sm btn-dark app-btn app-topbar-dash-btn" href="{{ route('dashboard') }}"><i class="bi bi-grid-1x2 me-1"></i>Dashboard</a>
             <span class="app-topbar-meta">Role: {{ auth()->user()->Role }}</span>
@@ -52,6 +53,7 @@
   <main class="{{ $embed ? 'container-fluid auth-embed-main py-3' : 'container-fluid app-main py-4' }}">
     @yield('content')
   </main>
+  @show
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   @stack('scripts')
 </body>

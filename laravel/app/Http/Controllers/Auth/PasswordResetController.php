@@ -50,15 +50,28 @@ class PasswordResetController extends Controller
 
     public function showReset(Request $request): View
     {
+        try {
+            $resetRow = $this->verifiedReset($request);
+        } catch (Throwable $e) {
+            report($e);
+            $resetRow = null;
+            $request->session()->now('error', 'Password reset is unavailable until the database migration is applied.');
+        }
+
         return view('auth.reset-password', [
             'embed' => $this->isEmbed($request),
-            'resetRow' => $this->verifiedReset($request),
+            'resetRow' => $resetRow,
         ]);
     }
 
     public function updatePassword(Request $request): RedirectResponse
     {
-        $reset = $this->verifiedReset($request);
+        try {
+            $reset = $this->verifiedReset($request);
+        } catch (Throwable $e) {
+            report($e);
+            $reset = null;
+        }
         $password = (string) $request->input('password', '');
 
         $error = match (true) {
@@ -125,7 +138,7 @@ class PasswordResetController extends Controller
 
         if (config('services.brevo.show_code_on_failure')) {
             return $this->backToForgot($request, $email,
-                'We could not send the verification email. Use the code below to continue. It expires in 15 minutes.', 'success', isError: false)
+                'We could not send the verification email. Use the code below to continue. It expires in '.(int) config('school.password_reset.code_ttl_minutes').' minutes.', 'success', isError: false)
                 ->with('debug_code', $code);
         }
 
@@ -148,14 +161,20 @@ class PasswordResetController extends Controller
             return $this->backToForgot($request, $email, 'Please enter the 6-digit verification code from your email.', 'success', 'error');
         }
 
-        $reset = PasswordReset::query()
-            ->join('User_Accounts', 'User_Accounts.User_ID', '=', 'Password_Resets.User_ID')
-            ->where('Password_Resets.Token_Hash', hash('sha256', $code))
-            ->whereRaw('LOWER(User_Accounts.Email) = ?', [$email])
-            ->whereNull('Password_Resets.Used_At')
-            ->whereRaw('Password_Resets.Expires_At > NOW()')
-            ->where('User_Accounts.Status', UserAccount::STATUS_ACTIVE)
-            ->first(['Password_Resets.Reset_ID', 'Password_Resets.User_ID']);
+        try {
+            $reset = PasswordReset::query()
+                ->join('User_Accounts', 'User_Accounts.User_ID', '=', 'Password_Resets.User_ID')
+                ->where('Password_Resets.Token_Hash', hash('sha256', $code))
+                ->whereRaw('LOWER(User_Accounts.Email) = ?', [$email])
+                ->whereNull('Password_Resets.Used_At')
+                ->whereRaw('Password_Resets.Expires_At > NOW()')
+                ->where('User_Accounts.Status', UserAccount::STATUS_ACTIVE)
+                ->first(['Password_Resets.Reset_ID', 'Password_Resets.User_ID']);
+        } catch (Throwable $e) {
+            report($e);
+
+            return $this->backToForgot($request, $email, 'Unable to verify the code right now. Please try again later.', 'success', 'error');
+        }
 
         if (! $reset) {
             return $this->backToForgot($request, $email, 'Invalid or expired verification code. Please request a new code.', 'success', 'error');

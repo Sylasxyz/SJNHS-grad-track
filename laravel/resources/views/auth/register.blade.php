@@ -144,9 +144,9 @@
             <input class="form-check-input" type="checkbox" value="1" id="{{ $p }}_agree_terms" name="agree_terms" data-required data-terms @checked(old('agree_terms'))>
             <label class="form-check-label" for="{{ $p }}_agree_terms">
               I agree to the
-              <a href="{{ \App\Support\AppLink::legacy('terms') }}" target="_blank" rel="noopener">Terms and Conditions</a>
+              <a href="{{ $withEmbed('terms') }}" target="_blank" rel="noopener">Terms and Conditions</a>
               and
-              <a href="{{ \App\Support\AppLink::legacy('privacy') }}" target="_blank" rel="noopener">Privacy Policy</a>
+              <a href="{{ $withEmbed('privacy') }}" target="_blank" rel="noopener">Privacy Policy</a>
             </label>
           </div>
           <button class="btn btn-primary w-100 register-submit-btn" type="submit" data-submit disabled>{{ $f['button'] }}</button>

@@ -28,6 +28,12 @@ class LoginController extends Controller
 
     public function store(Request $request, LoginThrottle $throttle): View|RedirectResponse
     {
+        if (Auth::check()) {
+            return $this->isEmbed($request)
+                ? $this->topWindowRedirect(route('dashboard'))
+                : redirect()->route('dashboard');
+        }
+
         $username = trim((string) $request->input('username', ''));
         $password = (string) $request->input('password', '');
         $failKey = $username !== '' ? $username : '(blank)';
@@ -103,7 +109,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 
     private function failed(Request $request, LoginThrottle $throttle, string $username, string $message): RedirectResponse
