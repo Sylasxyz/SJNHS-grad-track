@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserAccount;
+use App\Models\UserMessage;
+use App\Services\BrevoMailer;
 use App\Services\Messaging;
 use Closure;
 use Illuminate\Http\RedirectResponse;
@@ -88,6 +90,16 @@ class MessageController extends Controller
 
     private function deliver(UserAccount $me, UserAccount $recipient, string $text): RedirectResponse
     {
+        $notify = $me->isStaff() && $recipient->isStudent();
+        $unreadBefore = 0;
+        if ($notify) {
+            $unreadBefore = UserMessage::query()
+                ->where('Sender_ID', $me->User_ID)
+                ->where('Recipient_ID', $recipient->User_ID)
+                ->where('Is_Read', 0)
+                ->count();
+        }
+
         try {
             $this->messaging->send($me, $recipient, $text);
         } catch (Throwable $e) {
@@ -96,7 +108,35 @@ class MessageController extends Controller
             return back()->withInput()->with('error', 'Could not send message. Please try again.');
         }
 
-        return redirect()->route('messages.show', $recipient)->with('success', 'Message sent.');
+        $notice = '';
+        // Email only the first unread message in a conversation so follow-up lines do not flood the inbox.
+        if ($notify && $unreadBefore === 0) {
+            $mail = app(BrevoMailer::class)->send(
+                (string) $recipient->Email,
+                'New message — '.config('school.name').' Graduate Tracking',
+                $this->studentNoticeBody($me, $recipient)
+            );
+            $notice = $mail['ok']
+                ? ' An email notice was sent to their registered email.'
+                : '';
+            if (! $mail['ok']) {
+                report(new \RuntimeException('Message notice email failed: '.$mail['error']));
+            }
+        }
+
+        return redirect()->route('messages.show', $recipient)->with('success', 'Message sent.'.$notice);
+    }
+
+    private function studentNoticeBody(UserAccount $staff, UserAccount $student): string
+    {
+        $school = (string) config('school.name');
+        $login = route('login');
+
+        return "Hello ".Messaging::displayName($student).",\n\n"
+            .'You have a new unread message from '.Messaging::displayName($staff).' ('.$staff->Role.") in the {$school} Graduate Tracking System.\n\n"
+            ."Please log in to your account and open Messages to read it and reply.\n"
+            .$login."\n\n"
+            ."This email does not include the message. Do not reply to this email.\n";
     }
 
     private function render(UserAccount $me, ?UserAccount $partner = null, bool $compose = false, string $search = ''): View
