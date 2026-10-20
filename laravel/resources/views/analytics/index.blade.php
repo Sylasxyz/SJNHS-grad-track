@@ -301,7 +301,13 @@
         maintainAspectRatio: false,
         scales: {
           y: { beginAtZero: true, max: 100, grid: { color: chartGrid } },
-          x: { grid: { display: false } }
+          x: {
+            grid: { display: false },
+            ticks: {
+              maxRotation: window.matchMedia('(max-width: 768px)').matches ? 45 : 0,
+              font: { size: window.matchMedia('(max-width: 768px)').matches ? 10 : 12 }
+            }
+          }
         },
         plugins: { legend: { display: false } }
       }

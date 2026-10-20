@@ -169,9 +169,19 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { bottom: 4 } },
         plugins: { legend: { display: false } },
         scales: {
-          x: { ticks: { maxRotation: 45, minRotation: 0, autoSkip: true, color: '#64748b' }, grid: { display: false } },
+          x: {
+            ticks: {
+              maxRotation: window.matchMedia('(max-width: 768px)').matches ? 60 : 45,
+              minRotation: window.matchMedia('(max-width: 768px)').matches ? 45 : 0,
+              autoSkip: true,
+              font: { size: window.matchMedia('(max-width: 768px)').matches ? 10 : 12 },
+              color: '#64748b'
+            },
+            grid: { display: false }
+          },
           y: { beginAtZero: true, ticks: { precision: 0, color: '#64748b' }, grid: { color: 'rgba(148, 163, 184, 0.25)' } }
         }
       }

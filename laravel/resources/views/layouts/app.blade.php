@@ -32,11 +32,28 @@
         </a>
 
         <div class="app-topbar-actions">
-          <a class="app-topbar-link" href="{{ route('home') }}">Back to Homepage</a>
+          <a class="app-topbar-link app-topbar-desktop-only" href="{{ route('home') }}">Back to Homepage</a>
           @auth
-            <a class="btn btn-sm btn-dark app-btn app-topbar-dash-btn" href="{{ route('dashboard') }}"><i class="bi bi-grid-1x2 me-1"></i>Dashboard</a>
-            <span class="app-topbar-meta">Role: {{ auth()->user()->Role }}</span>
-            <form method="post" action="{{ route('logout') }}" class="d-inline">
+            <a class="btn btn-sm btn-dark app-btn app-topbar-dash-btn app-topbar-desktop-only" href="{{ route('dashboard') }}"><i class="bi bi-grid-1x2 me-1"></i>Dashboard</a>
+            <span class="app-topbar-meta app-topbar-desktop-only">Role: {{ auth()->user()->Role }}</span>
+            <span class="app-topbar-role-chip app-topbar-mobile-only" title="Signed in as {{ auth()->user()->Role }}">{{ auth()->user()->Role }}</span>
+            <div class="dropdown app-topbar-mobile-only">
+              <button class="btn btn-sm btn-outline-secondary app-btn app-topbar-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="More actions">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li><a class="dropdown-item" href="{{ route('home') }}"><i class="bi bi-house me-2"></i>Homepage</a></li>
+                <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-grid-1x2 me-2"></i>Dashboard</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="post" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+            <form method="post" action="{{ route('logout') }}" class="d-inline app-topbar-desktop-only">
               @csrf
               <button class="btn btn-sm btn-outline-secondary app-btn" type="submit">Logout</button>
             </form>

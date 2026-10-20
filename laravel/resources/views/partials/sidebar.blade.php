@@ -27,14 +27,14 @@
     }
 @endphp
 
-<aside class="dashboard-left-rail">
-  <button type="button" class="dashboard-rail-logo dashboard-rail-logo-btn" data-dashboard-menu-toggle aria-label="Toggle navigation menu">
+<aside class="dashboard-left-rail" aria-label="Main navigation">
+  <button type="button" class="dashboard-rail-logo dashboard-rail-logo-btn dashboard-rail-desktop-toggle" data-dashboard-menu-toggle aria-label="Toggle navigation menu" title="Expand menu">
     <i class="bi bi-mortarboard-fill"></i>
   </button>
   <div class="dashboard-rail-icons">
     @foreach ($links as $link)
       @php([$routeName, $icon, $label] = $link)
-      <a href="{{ route($routeName) }}" class="dashboard-rail-icon {{ AppLink::isActive($link[3] ?? $routeName) ? 'is-active' : '' }}">
+      <a href="{{ route($routeName) }}" class="dashboard-rail-icon {{ AppLink::isActive($link[3] ?? $routeName) ? 'is-active' : '' }}" title="{{ $label }}">
         <i class="bi {{ $icon }}"></i><span class="dashboard-rail-label">{{ $label }}</span>
       </a>
     @endforeach
